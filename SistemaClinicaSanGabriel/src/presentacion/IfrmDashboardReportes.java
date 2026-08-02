@@ -33,9 +33,8 @@ public class IfrmDashboardReportes extends javax.swing.JInternalFrame {
 
         DefaultTableModel modelo = new DefaultTableModel();
         modelo.setRowCount(0);
-tblReporte.setModel(modelo);
-tblReporte.setEnabled(false);
-        
+        tblReporte.setModel(modelo);
+        tblReporte.setEnabled(false);
 
         //*lblIngresos.setText("S/. 0.00");
         //*lblPagos.setText("0");
