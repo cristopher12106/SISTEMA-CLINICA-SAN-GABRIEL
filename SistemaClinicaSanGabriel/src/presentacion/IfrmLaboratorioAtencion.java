@@ -36,7 +36,7 @@ public class IfrmLaboratorioAtencion extends javax.swing.JInternalFrame {
             for (ExamenLaboratorio ex : lista) {
                 modelo.addRow(new Object[]{
                     ex.getIdExamen(),
-                    ex.getIdAtencion(),
+                    ex.getIdPaciente(),
                     ex.getTipoExamen(),
                     ex.getEstado(),
                     ex.getFechaSolicitud()
