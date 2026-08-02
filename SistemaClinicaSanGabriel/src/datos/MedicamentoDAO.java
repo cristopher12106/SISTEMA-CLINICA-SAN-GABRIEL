@@ -93,4 +93,17 @@ public class MedicamentoDAO {
             return ps.executeUpdate() > 0;
         }
     }
+    public boolean insertar(Medicamento med) throws SQLException {
+        String sql = "INSERT INTO medicamento (nombre, descripcion, stock_actual, stock_minimo, precio_unitario, estado) "
+                   + "VALUES (?, ?, ?, ?, ?, 1)";
+        try (Connection cn = ConexionBD.getInstancia().getConexion();
+             PreparedStatement ps = cn.prepareStatement(sql)) {
+            ps.setString(1, med.getNombre());
+            ps.setString(2, med.getDescripcion());
+            ps.setInt(3, med.getStockActual());
+            ps.setInt(4, med.getStockMinimo()); // Si no le asignas valor en la vista, se enviará el por defecto
+            ps.setDouble(5, med.getPrecioUnitario());
+            return ps.executeUpdate() > 0;
+        }
+    }
 }

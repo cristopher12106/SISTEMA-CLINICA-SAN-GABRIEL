@@ -81,4 +81,12 @@ public class FarmaciaLOG {
             throw new Exception("Error en la base de datos al procesar la entrega: " + e.getMessage());
         }
     }
+    public boolean registrarMedicamento(Medicamento med) throws Exception {
+        try {
+            // Llama al método insertar/guardar de tu DAO
+            return medicamentoDAO.insertar(med); 
+        } catch (SQLException e) {
+            throw new Exception("Error al guardar el medicamento: " + e.getMessage());
+        }
+    }
 }

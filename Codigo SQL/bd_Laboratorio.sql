@@ -1,8 +1,9 @@
 -- Ejecucion primordial --
 CREATE TABLE IF NOT EXISTS examen_laboratorio (
     id_examen INT AUTO_INCREMENT PRIMARY KEY,
-    id_atencion INT NOT NULL,
+    id_paciente INT NOT NULL,
     tipo_examen VARCHAR(100) NOT NULL,
+    observaciones TEXT,
     estado VARCHAR(20) NOT NULL DEFAULT 'Pendiente',
     fecha_solicitud DATETIME DEFAULT CURRENT_TIMESTAMP
 );
