@@ -122,11 +122,6 @@ CREATE TABLE Medico_Especialidad (
 );
 
 -- MODULO ATENCION MEDICA
-DROP TABLE IF EXISTS detalle_receta;
-DROP TABLE IF EXISTS recetas_medicas;
-DROP TABLE IF EXISTS diagnosticos_atencion;
-DROP TABLE IF EXISTS signos_vitales;
-DROP TABLE IF EXISTS atenciones_medicas;
 
 CREATE TABLE atenciones_medicas (
     idAtencion INT AUTO_INCREMENT PRIMARY KEY,

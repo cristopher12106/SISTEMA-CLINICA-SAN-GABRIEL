@@ -1,0 +1,284 @@
+package presentacion;
+
+import entidades.Cita;
+import entidades.Especialidad;
+import entidades.HorarioMedico;
+import entidades.Medico;
+import entidades.Paciente;
+import entidades.Rol;
+import entidades.Usuario;
+import logica.CitaLOG;
+import logica.HorarioLOG;
+import logica.MedicoLOG;
+import logica.PacienteLOG;
+import logica.UsuarioLOG;
+
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+public class DatosDePrueba {
+
+    public static void main(String[] args) {
+        cargarUsuarios();
+        cargarMedicos();
+        cargarHorarios();
+        cargarPacientes();
+        cargarCitas();
+    }
+
+    public static void cargarUsuarios() {
+        // ADMINISTRADOR (3: 2 + 1 extra)
+        UsuarioLOG.registrarUsuario("admin", "%Admin2026", Rol.ADMINISTRADOR, true);
+        UsuarioLOG.registrarUsuario("mrodriguez", "#ModAdmin2", Rol.ADMINISTRADOR, true);
+        UsuarioLOG.registrarUsuario("gcastillo", "@Admin789", Rol.ADMINISTRADOR, true);
+
+        // RECEPCIONISTA (3: 2 + 1 extra)
+        UsuarioLOG.registrarUsuario("mgarcia", "$Recep123", Rol.RECEPCIONISTA, true);
+        UsuarioLOG.registrarUsuario("cpenai", "!Recep456", Rol.RECEPCIONISTA, true);
+        UsuarioLOG.registrarUsuario("svaldez", "&Recep789", Rol.RECEPCIONISTA, true);
+
+        // MEDICO (10)
+        UsuarioLOG.registrarUsuario("jandrade", "*Doctor12", Rol.MEDICO, true);
+        UsuarioLOG.registrarUsuario("sromero", "%Doctor34", Rol.MEDICO, true);
+        UsuarioLOG.registrarUsuario("vhurtado", "?Doctor56", Rol.MEDICO, true);
+        UsuarioLOG.registrarUsuario("lrojas", "@Doctor90", Rol.MEDICO, true);
+        UsuarioLOG.registrarUsuario("msalazar", "#Doctor11", Rol.MEDICO, true);
+        UsuarioLOG.registrarUsuario("cmendoza", "$Doctor22", Rol.MEDICO, true);
+        UsuarioLOG.registrarUsuario("ecabrera", "%Doctor33", Rol.MEDICO, true);
+        UsuarioLOG.registrarUsuario("arivas", "!Doctor44", Rol.MEDICO, true);
+        UsuarioLOG.registrarUsuario("nfloresm", "&Doctor55", Rol.MEDICO, true);
+        UsuarioLOG.registrarUsuario("jcornejo", "?Doctor66", Rol.MEDICO, true);
+
+        // ENFERMERA (2)
+        UsuarioLOG.registrarUsuario("lflores", ".Enfer901", Rol.ENFERMERA, true);
+        UsuarioLOG.registrarUsuario("rtorres", "+Enfer234", Rol.ENFERMERA, true);
+
+        // LABORATORISTA (2)
+        UsuarioLOG.registrarUsuario("pcastro", "-Lab2026!", Rol.LABORATORISTA, true);
+        UsuarioLOG.registrarUsuario("knoa", "_Lab2026?", Rol.LABORATORISTA, true);
+
+        // FARMACEUTICO (3: 2 + 1 extra)
+        UsuarioLOG.registrarUsuario("dchavez", "Farma#123", Rol.FARMACEUTICO, true);
+        UsuarioLOG.registrarUsuario("yquispe", "Farma$456", Rol.FARMACEUTICO, true);
+        UsuarioLOG.registrarUsuario("maguilar", "Farma@789", Rol.FARMACEUTICO, true);
+
+        // CAJERO (2)
+        UsuarioLOG.registrarUsuario("aespinoza", "Caja%7890", Rol.CAJERO, true);
+        UsuarioLOG.registrarUsuario("fcampos", "Caja!1122", Rol.CAJERO, true);
+
+        // DIRECTOR_MEDICO (2)
+        UsuarioLOG.registrarUsuario("director", "Direct#10", Rol.DIRECTOR_MEDICO, true);
+        UsuarioLOG.registrarUsuario("mherrera", "DirMed@11", Rol.DIRECTOR_MEDICO, true);
+    }
+
+    public static void cargarPacientes() {
+        PacienteLOG.registrarPaciente(new Paciente.Builder()
+                .dni("12345678").nombres("Juan Carlos").apellidos("Perez Gomez")
+                .fechaNacimiento(LocalDate.of(1985, 3, 15)).sexo("M")
+                .telefono("987654321").direccion("Av. Los Olivos 123, Trujillo")
+                .numeroHistoriaClinica("10000001").build());
+
+        PacienteLOG.registrarPaciente(new Paciente.Builder()
+                .dni("23456789").nombres("Maria Fernanda").apellidos("Lopez Diaz")
+                .fechaNacimiento(LocalDate.of(1990, 7, 22)).sexo("F")
+                .telefono("976543210").direccion("Jr. La Merced 456, Trujillo")
+                .numeroHistoriaClinica("10000002").build());
+
+        PacienteLOG.registrarPaciente(new Paciente.Builder()
+                .dni("34567890").nombres("Carlos Alberto").apellidos("Ramirez Torres")
+                .fechaNacimiento(LocalDate.of(1978, 11, 3)).sexo("M")
+                .telefono("965432109").direccion("Urb. El Molino Mz B Lt 8, Trujillo")
+                .numeroHistoriaClinica("10000003").build());
+
+        PacienteLOG.registrarPaciente(new Paciente.Builder()
+                .dni("45678901").nombres("Ana Lucia").apellidos("Chavez Medina")
+                .fechaNacimiento(LocalDate.of(1995, 1, 28)).sexo("F")
+                .telefono("954321098").direccion("Av. America Sur 789, Trujillo")
+                .numeroHistoriaClinica("10000004").build());
+
+        PacienteLOG.registrarPaciente(new Paciente.Builder()
+                .dni("56789012").nombres("Luis Miguel").apellidos("Fernandez Rojas")
+                .fechaNacimiento(LocalDate.of(1982, 9, 10)).sexo("M")
+                .telefono("943210987").direccion("Psj. Los Jardines 234, Trujillo")
+                .numeroHistoriaClinica("10000005").build());
+
+        PacienteLOG.registrarPaciente(new Paciente.Builder()
+                .dni("67890123").nombres("Rosa Elena").apellidos("Sanchez Vargas")
+                .fechaNacimiento(LocalDate.of(1992, 5, 19)).sexo("F")
+                .telefono("932109876").direccion("Calle San Martin 567, Trujillo")
+                .numeroHistoriaClinica("10000006").build());
+
+        PacienteLOG.registrarPaciente(new Paciente.Builder()
+                .dni("78901234").nombres("Pedro Andres").apellidos("Castro Huaman")
+                .fechaNacimiento(LocalDate.of(1975, 12, 1)).sexo("M")
+                .telefono("921098765").direccion("Av. Victor Larco 890, Trujillo")
+                .numeroHistoriaClinica("10000007").build());
+
+        PacienteLOG.registrarPaciente(new Paciente.Builder()
+                .dni("89012345").nombres("Carmen Rosa").apellidos("Flores Quispe")
+                .fechaNacimiento(LocalDate.of(1988, 4, 14)).sexo("F")
+                .telefono("910987654").direccion("Jr. Bolivar 321, Trujillo")
+                .numeroHistoriaClinica("10000008").build());
+
+        PacienteLOG.registrarPaciente(new Paciente.Builder()
+                .dni("90123456").nombres("Jose Antonio").apellidos("Salazar Mendoza")
+                .fechaNacimiento(LocalDate.of(1998, 8, 30)).sexo("M")
+                .telefono("909876543").direccion("Urb. San Andres Mz C Lt 12, Trujillo")
+                .numeroHistoriaClinica("10000009").build());
+
+        PacienteLOG.registrarPaciente(new Paciente.Builder()
+                .dni("01234567").nombres("Lucia Ines").apellidos("Gutierrez Paredes")
+                .fechaNacimiento(LocalDate.of(1993, 6, 25)).sexo("F")
+                .telefono("998765432").direccion("Av. España 654, Trujillo")
+                .numeroHistoriaClinica("10000010").build());
+    }
+
+    public static void cargarMedicos() {
+        List<Especialidad> especialidadesDisponibles = MedicoLOG.listarEspecialidades();
+        if (especialidadesDisponibles.isEmpty()) {
+            System.out.println("No hay especialidades registradas. Los medicos no se podran registrar.");
+            return;
+        }
+
+        registrarMedico("jandrade", "10001", "CM-10001", "20123456", "Jose Andres", "Jandrade Rios", "987600001", "jandrade@colegiomedico.pe", especialidadesDisponibles);
+        registrarMedico("sromero", "10002", "CM-10002", "20123457", "Sofia", "Romero Vega", "987600002", "sromero@colegiomedico.pe", especialidadesDisponibles);
+        registrarMedico("vhurtado", "10003", "CM-10003", "20123458", "Victor", "Hurtado Luna", "987600003", "vhurtado@colegiomedico.pe", especialidadesDisponibles);
+        registrarMedico("lrojas", "10004", "CM-10004", "20123459", "Luis", "Rojas Campos", "987600004", "lrojas@colegiomedico.pe", especialidadesDisponibles);
+        registrarMedico("msalazar", "10005", "CM-10005", "20123460", "Marta", "Salazar Diaz", "987600005", "msalazar@colegiomedico.pe", especialidadesDisponibles);
+        registrarMedico("cmendoza", "10006", "CM-10006", "20123461", "Carlos", "Mendoza Gil", "987600006", "cmendoza@colegiomedico.pe", especialidadesDisponibles);
+        registrarMedico("ecabrera", "10007", "CM-10007", "20123462", "Elena", "Cabrera Soto", "987600007", "ecabrera@colegiomedico.pe", especialidadesDisponibles);
+        registrarMedico("arivas", "10008", "CM-10008", "20123463", "Alonso", "Rivas Paredes", "987600008", "arivas@colegiomedico.pe", especialidadesDisponibles);
+        registrarMedico("nfloresm", "10009", "CM-10009", "20123464", "Natalia", "Flores Marin", "987600009", "nfloresm@colegiomedico.pe", especialidadesDisponibles);
+        registrarMedico("jcornejo", "10010", "CM-10010", "20123465", "Julio", "Cornejo Roca", "987600010", "jcornejo@colegiomedico.pe", especialidadesDisponibles);
+    }
+
+    private static void registrarMedico(String username, String codigo, String colegiatura,
+            String dni, String nombres, String apellidos, String telefono, String correo,
+            List<Especialidad> especialidades) {
+        Usuario usuario = UsuarioLOG.buscarUsuario(username);
+        if (usuario == null) {
+            System.out.println("No se encontro el usuario " + username + ", no se registro su Medico.");
+            return;
+        }
+        List<Especialidad> especialidadesMedico = new ArrayList<>(especialidades);
+        Medico medico = new Medico(codigo, usuario.getIdUsuario(), colegiatura, dni,
+                nombres, apellidos, telefono, correo, especialidadesMedico);
+        MedicoLOG.registrarMedico(medico);
+    }
+
+    public static void cargarHorarios() {
+        String[] dias = {"Lunes", "Martes", "Miercoles", "Jueves", "Viernes"};
+        for (int i = 1; i <= 10; i++) {
+            String codigoMedico = String.format("%05d", i + 10000);
+            for (String dia : dias) {
+                registrarHorario(codigoMedico, dia, "08:00", "13:00");
+            }
+        }
+    }
+
+    private static void registrarHorario(String codigoMedico, String diaSemana,
+            String horaInicio, String horaFin) {
+        Medico medico = new Medico();
+        medico.setCodigo(codigoMedico);
+        HorarioMedico horario = new HorarioMedico();
+        horario.setMedico(medico);
+        horario.setDiaSemana(diaSemana);
+        horario.setHoraInicio(horaInicio);
+        horario.setHoraFin(horaFin);
+        HorarioLOG.registrarHorario(horario);
+    }
+
+    public static void cargarCitas() {
+        List<Medico> medicos = MedicoLOG.listarMedicos();
+        List<Paciente> pacientes = PacienteLOG.listarPacientes();
+        if (medicos.isEmpty() || pacientes.isEmpty()) {
+            System.out.println("No hay medicos o pacientes registrados, no se generaron citas.");
+            return;
+        }
+
+        Random random = new Random();
+        int contadorCodigo = 1;
+        LocalDate hoy = LocalDate.now();
+
+        for (Medico medico : medicos) {
+            List<HorarioMedico> horarios = HorarioLOG.listarHorariosPorMedico(medico);
+            if (horarios.isEmpty()) {
+                continue;
+            }
+
+            int cantidadCitas = 1 + random.nextInt(3);
+            for (int i = 0; i < cantidadCitas; i++) {
+                for (int intento = 0; intento < 30; intento++) {
+                    HorarioMedico horario = horarios.get(random.nextInt(horarios.size()));
+                    LocalDate fecha = proximaFechaPorDia(hoy, horario.getDiaSemana());
+                    if (fecha == null) {
+                        continue;
+                    }
+                    String hora = horaAleatoriaEnRango(horario.getHoraInicio(), horario.getHoraFin(), random);
+                    if (hora == null) {
+                        continue;
+                    }
+
+                    if (!CitaLOG.consultarDisponibilidad(medico, fecha.toString(), hora)) {
+                        continue;
+                    }
+
+                    Paciente paciente = pacientes.get(random.nextInt(pacientes.size()));
+                    Cita cita = new Cita.CitaBuilder()
+                            .setCodigo(String.format("CIT-%04d", contadorCodigo++))
+                            .setMedico(medico)
+                            .setNumeroHistoriaClinica(paciente.getNumeroHistoriaClinica())
+                            .setFecha(fecha.toString())
+                            .setHora(hora)
+                            .setEstado("Programada")
+                            .setObservaciones("Cita generada de prueba")
+                            .build();
+                    CitaLOG.registrarCita(cita);
+                    break;
+                }
+            }
+        }
+    }
+
+    private static LocalDate proximaFechaPorDia(LocalDate desde, String diaSemana) {
+        LocalDate fecha = desde.plusDays(1);
+        for (int i = 0; i < 15; i++) {
+            if (diaDeLaSemana(fecha).equalsIgnoreCase(diaSemana)) {
+                return fecha;
+            }
+            fecha = fecha.plusDays(1);
+        }
+        return null;
+    }
+
+    private static String diaDeLaSemana(LocalDate fecha) {
+        DayOfWeek dia = fecha.getDayOfWeek();
+        return switch (dia) {
+            case MONDAY -> "Lunes";
+            case TUESDAY -> "Martes";
+            case WEDNESDAY -> "Miercoles";
+            case THURSDAY -> "Jueves";
+            case FRIDAY -> "Viernes";
+            case SATURDAY -> "Sabado";
+            case SUNDAY -> "Domingo";
+        };
+    }
+
+    private static String horaAleatoriaEnRango(String horaInicio, String horaFin, Random random) {
+        List<String> slots = new ArrayList<>();
+        LocalTime actual = LocalTime.parse(horaInicio);
+        LocalTime fin = LocalTime.parse(horaFin);
+        while (actual.isBefore(fin)) {
+            slots.add(actual.toString());
+            actual = actual.plusMinutes(30);
+        }
+        if (slots.isEmpty()) {
+            return null;
+        }
+        return slots.get(random.nextInt(slots.size()));
+    }
+}
