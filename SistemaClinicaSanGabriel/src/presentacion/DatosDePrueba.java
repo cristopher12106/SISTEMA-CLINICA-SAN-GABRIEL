@@ -40,8 +40,9 @@ public class DatosDePrueba {
     private static Apoderado APODERADO_PRUEBA;
 
     public static void main(String[] args) {
-        cargarPacientes();
+        
     }
+    //1.USUARIOS
     public static void cargarUsuarios() {
         SesionUsuario.getInstance().iniciarSesion(new Usuario("admin", "%Admin2026", Rol.ADMINISTRADOR, true));
         // ADMINISTRADOR (3: 2 + 1 extra)
@@ -90,6 +91,7 @@ public class DatosDePrueba {
         SesionUsuario.getInstance().cerrarSesion();
     }
 
+    //2.PACIENTES
     public static void cargarPacientes() {
         Paciente.Builder primerPaciente = new Paciente.Builder()
                 .dni("12345678").nombres("Juan Carlos").apellidos("Perez Gomez")
@@ -158,7 +160,19 @@ public class DatosDePrueba {
                 .telefono("998765432").direccion("Av. España 654, Trujillo")
                 .numeroHistoriaClinica("10000010").build());
     }
+    public static void cargarSeguroYApoderado() {
+        SeguroMedico seguro = new SeguroMedico(0, "Rimac EPS", "1000000001", "T", true);
+        if (SeguroDAO.insertar(seguro)) {
+            SEGURO_PRUEBA = seguro;
+        }
 
+        Apoderado apoderado = new Apoderado(0, "87654321", "Carmen Rosa", "Gutierrez Lopez", "987654321", "Madre", true);
+        if (ApoderadoDAO.insertar(apoderado)) {
+            APODERADO_PRUEBA = apoderado;
+        }
+    }
+
+    //3.MEDICOS, CITA Y HORARIOS
     public static void cargarEspecialidades() {
         if (!MedicoLOG.listarEspecialidades().isEmpty()) {
             System.out.println("Ya existen especialidades registradas, no se volvieron a crear.");
@@ -174,82 +188,6 @@ public class DatosDePrueba {
 
     private static void registrarEspecialidad(String codigo, String nombre, String descripcion) {
         MedicoLOG.registrarEspecialidad(new Especialidad(codigo, nombre, descripcion));
-    }
-
-    public static void cargarSeguroYApoderado() {
-        SeguroMedico seguro = new SeguroMedico(0, "Rimac EPS", "1000000001", "T", true);
-        if (SeguroDAO.insertar(seguro)) {
-            SEGURO_PRUEBA = seguro;
-        }
-
-        Apoderado apoderado = new Apoderado(0, "87654321", "Carmen Rosa", "Gutierrez Lopez", "987654321", "Madre", true);
-        if (ApoderadoDAO.insertar(apoderado)) {
-            APODERADO_PRUEBA = apoderado;
-        }
-    }
-
-    public static void cargarMedicamentos() {
-        MedicamentoDAO dao = new MedicamentoDAO();
-        try {
-            if (dao.listar().isEmpty()) {
-                dao.insertar(new Medicamento(0, "Paracetamol 500mg", "Analgesico y antipiretico", 100, 20, 1.50, true));
-                dao.insertar(new Medicamento(0, "Ibuprofeno 400mg", "Antiinflamatorio no esteroideo", 80, 15, 2.00, true));
-                dao.insertar(new Medicamento(0, "Amoxicilina 500mg", "Antibiotico de amplio espectro", 60, 10, 3.50, true));
-            } else {
-                System.out.println("Ya existen medicamentos registrados, no se volvieron a crear.");
-            }
-        } catch (SQLException e) {
-            System.err.println("Error al cargar medicamentos: " + e.getMessage());
-        }
-    }
-
-    public static void cargarAtencionMedica() {
-        List<Cita> citas = CitaLOG.listarCitas();
-        Cita cita = null;
-        for (Cita c : citas) {
-            if ("Programada".equalsIgnoreCase(c.getEstado())) {
-                cita = c;
-                break;
-            }
-        }
-
-        if (cita == null) {
-            System.out.println("No hay citas en estado Programada, no se genero la atencion medica de ejemplo.");
-            return;
-        }
-
-        Map<String, Integer> idsMedicamentos = new HashMap<>();
-        try {
-            for (Medicamento m : new MedicamentoDAO().listar()) {
-                idsMedicamentos.put(m.getNombre(), m.getIdMedicamento());
-            }
-        } catch (SQLException e) {
-            System.err.println("Error al listar medicamentos: " + e.getMessage());
-        }
-
-        AtencionMedica atencion = new AtencionMedica(cita.getCodigo(), "Dolor abdominal y ardor estomacal",
-                "Sin antecedentes de importancia");
-        atencion.setSignosVitales(new SignosVitales(120, 80, 36.8, 70.0, 165.0, 75, 16));
-        atencion.agregarDiagnostico(new Diagnostico("Gastritis aguda", Diagnostico.TIPO_PRESUNTIVO));
-        atencion.agregarDiagnostico(new Diagnostico("Dispepsia funcional", Diagnostico.TIPO_DEFINITIVO));
-        atencion.setTratamiento("Omeprazol 20 mg cada 24 horas por 14 dias y dieta blanda.");
-        atencion.setObservaciones("Control medico en 15 dias.");
-
-        Integer idParacetamol = idsMedicamentos.get("Paracetamol 500mg");
-        Integer idIbuprofeno = idsMedicamentos.get("Ibuprofeno 400mg");
-        if (idParacetamol != null) {
-            atencion.agregarMedicamentoAReceta(idParacetamol, "Paracetamol 500mg", 30, "1 tableta cada 8 horas si hay dolor");
-        }
-        if (idIbuprofeno != null) {
-            atencion.agregarMedicamentoAReceta(idIbuprofeno, "Ibuprofeno 400mg", 20, "1 tableta cada 12 horas por 10 dias");
-        }
-
-        boolean exito = AtencionMedicaDAO.registrarAtencionCompleta(atencion);
-        if (exito) {
-            System.out.println("Atencion medica de ejemplo registrada para la cita " + cita.getCodigo() + ".");
-        } else {
-            System.out.println("No se pudo registrar la atencion medica de ejemplo.");
-        }
     }
 
     public static void cargarMedicos() {
@@ -270,21 +208,6 @@ public class DatosDePrueba {
         registrarMedico("nfloresm", "10009", "CM-10009", "20123464", "Natalia", "Flores Marin", "987600009", "nfloresm@colegiomedico.pe", especialidadesDisponibles);
         registrarMedico("jcornejo", "10010", "CM-10010", "20123465", "Julio", "Cornejo Roca", "987600010", "jcornejo@colegiomedico.pe", especialidadesDisponibles);
     }
-
-    private static void registrarMedico(String username, String codigo, String colegiatura,
-            String dni, String nombres, String apellidos, String telefono, String correo,
-            List<Especialidad> especialidades) {
-        Usuario usuario = UsuarioLOG.buscarUsuario(username);
-        if (usuario == null) {
-            System.out.println("No se encontro el usuario " + username + ", no se registro su Medico.");
-            return;
-        }
-        List<Especialidad> especialidadesMedico = new ArrayList<>(especialidades);
-        Medico medico = new Medico(codigo, usuario.getIdUsuario(), colegiatura, dni,
-                nombres, apellidos, telefono, correo, especialidadesMedico);
-        MedicoLOG.registrarMedico(medico);
-    }
-
     public static void cargarHorarios() {
         String[] dias = {"Lunes", "Martes", "Miercoles", "Jueves", "Viernes"};
         for (int i = 1; i <= 10; i++) {
@@ -294,19 +217,6 @@ public class DatosDePrueba {
             }
         }
     }
-
-    private static void registrarHorario(String codigoMedico, String diaSemana,
-            String horaInicio, String horaFin) {
-        Medico medico = new Medico();
-        medico.setCodigo(codigoMedico);
-        HorarioMedico horario = new HorarioMedico();
-        horario.setMedico(medico);
-        horario.setDiaSemana(diaSemana);
-        horario.setHoraInicio(horaInicio);
-        horario.setHoraFin(horaFin);
-        HorarioLOG.registrarHorario(horario);
-    }
-
     public static void cargarCitas() {
         List<Medico> medicos = MedicoLOG.listarMedicos();
         List<Paciente> pacientes = PacienteLOG.listarPacientes();
@@ -358,6 +268,55 @@ public class DatosDePrueba {
             }
         }
     }
+
+    //4.ATENCION MEDICA Y REGISTRO CLINICO
+    public static void cargarMedicamentos() {
+        MedicamentoDAO dao = new MedicamentoDAO();
+        try {
+            if (dao.listar().isEmpty()) {
+                dao.insertar(new Medicamento(0, "Paracetamol 500mg", "Analgesico y antipiretico", 100, 20, 1.50, true));
+                dao.insertar(new Medicamento(0, "Ibuprofeno 400mg", "Antiinflamatorio no esteroideo", 80, 15, 2.00, true));
+                dao.insertar(new Medicamento(0, "Amoxicilina 500mg", "Antibiotico de amplio espectro", 60, 10, 3.50, true));
+            } else {
+                System.out.println("Ya existen medicamentos registrados, no se volvieron a crear.");
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al cargar medicamentos: " + e.getMessage());
+        }
+    }
+
+
+
+
+    private static void registrarMedico(String username, String codigo, String colegiatura,
+            String dni, String nombres, String apellidos, String telefono, String correo,
+            List<Especialidad> especialidades) {
+        Usuario usuario = UsuarioLOG.buscarUsuario(username);
+        if (usuario == null) {
+            System.out.println("No se encontro el usuario " + username + ", no se registro su Medico.");
+            return;
+        }
+        List<Especialidad> especialidadesMedico = new ArrayList<>(especialidades);
+        Medico medico = new Medico(codigo, usuario.getIdUsuario(), colegiatura, dni,
+                nombres, apellidos, telefono, correo, especialidadesMedico);
+        MedicoLOG.registrarMedico(medico);
+    }
+
+
+
+    private static void registrarHorario(String codigoMedico, String diaSemana,
+            String horaInicio, String horaFin) {
+        Medico medico = new Medico();
+        medico.setCodigo(codigoMedico);
+        HorarioMedico horario = new HorarioMedico();
+        horario.setMedico(medico);
+        horario.setDiaSemana(diaSemana);
+        horario.setHoraInicio(horaInicio);
+        horario.setHoraFin(horaFin);
+        HorarioLOG.registrarHorario(horario);
+    }
+
+
 
     private static LocalDate proximaFechaPorDia(LocalDate desde, String diaSemana) {
         LocalDate fecha = desde.plusDays(1);
