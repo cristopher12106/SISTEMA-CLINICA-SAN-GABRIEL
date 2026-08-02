@@ -1,11 +1,22 @@
 package presentacion;
 
+import datos.ApoderadoDAO;
+import datos.AtencionMedicaDAO;
+import datos.MedicamentoDAO;
+import datos.SeguroDAO;
+import datos.SesionUsuario;
+import entidades.Apoderado;
+import entidades.AtencionMedica;
 import entidades.Cita;
+import entidades.Diagnostico;
 import entidades.Especialidad;
 import entidades.HorarioMedico;
+import entidades.Medicamento;
 import entidades.Medico;
 import entidades.Paciente;
 import entidades.Rol;
+import entidades.SeguroMedico;
+import entidades.SignosVitales;
 import entidades.Usuario;
 import logica.CitaLOG;
 import logica.HorarioLOG;
@@ -13,24 +24,26 @@ import logica.MedicoLOG;
 import logica.PacienteLOG;
 import logica.UsuarioLOG;
 
+import java.sql.SQLException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public class DatosDePrueba {
 
-    public static void main(String[] args) {
-        cargarUsuarios();
-        cargarMedicos();
-        cargarHorarios();
-        cargarPacientes();
-        cargarCitas();
-    }
+    private static SeguroMedico SEGURO_PRUEBA;
+    private static Apoderado APODERADO_PRUEBA;
 
+    public static void main(String[] args) {
+        cargarPacientes();
+    }
     public static void cargarUsuarios() {
+        SesionUsuario.getInstance().iniciarSesion(new Usuario("admin", "%Admin2026", Rol.ADMINISTRADOR, true));
         // ADMINISTRADOR (3: 2 + 1 extra)
         UsuarioLOG.registrarUsuario("admin", "%Admin2026", Rol.ADMINISTRADOR, true);
         UsuarioLOG.registrarUsuario("mrodriguez", "#ModAdmin2", Rol.ADMINISTRADOR, true);
@@ -73,14 +86,23 @@ public class DatosDePrueba {
         // DIRECTOR_MEDICO (2)
         UsuarioLOG.registrarUsuario("director", "Direct#10", Rol.DIRECTOR_MEDICO, true);
         UsuarioLOG.registrarUsuario("mherrera", "DirMed@11", Rol.DIRECTOR_MEDICO, true);
+
+        SesionUsuario.getInstance().cerrarSesion();
     }
 
     public static void cargarPacientes() {
-        PacienteLOG.registrarPaciente(new Paciente.Builder()
+        Paciente.Builder primerPaciente = new Paciente.Builder()
                 .dni("12345678").nombres("Juan Carlos").apellidos("Perez Gomez")
                 .fechaNacimiento(LocalDate.of(1985, 3, 15)).sexo("M")
                 .telefono("987654321").direccion("Av. Los Olivos 123, Trujillo")
-                .numeroHistoriaClinica("10000001").build());
+                .numeroHistoriaClinica("10000001");
+        if (SEGURO_PRUEBA != null) {
+            primerPaciente.seguroMedico(SEGURO_PRUEBA);
+        }
+        if (APODERADO_PRUEBA != null) {
+            primerPaciente.apoderado(APODERADO_PRUEBA);
+        }
+        PacienteLOG.registrarPaciente(primerPaciente.build());
 
         PacienteLOG.registrarPaciente(new Paciente.Builder()
                 .dni("23456789").nombres("Maria Fernanda").apellidos("Lopez Diaz")
@@ -135,6 +157,99 @@ public class DatosDePrueba {
                 .fechaNacimiento(LocalDate.of(1993, 6, 25)).sexo("F")
                 .telefono("998765432").direccion("Av. España 654, Trujillo")
                 .numeroHistoriaClinica("10000010").build());
+    }
+
+    public static void cargarEspecialidades() {
+        if (!MedicoLOG.listarEspecialidades().isEmpty()) {
+            System.out.println("Ya existen especialidades registradas, no se volvieron a crear.");
+            return;
+        }
+
+        registrarEspecialidad("ESP001", "Medicina General", "Atencion integral de pacientes adultos");
+        registrarEspecialidad("ESP002", "Pediatria", "Atencion medica de ninos y adolescentes");
+        registrarEspecialidad("ESP003", "Cardiologia", "Prevencion y tratamiento de enfermedades del corazon");
+        registrarEspecialidad("ESP004", "Dermatologia", "Diagnostico y tratamiento de enfermedades de la piel");
+        registrarEspecialidad("ESP005", "Ginecologia", "Salud integral de la mujer");
+    }
+
+    private static void registrarEspecialidad(String codigo, String nombre, String descripcion) {
+        MedicoLOG.registrarEspecialidad(new Especialidad(codigo, nombre, descripcion));
+    }
+
+    public static void cargarSeguroYApoderado() {
+        SeguroMedico seguro = new SeguroMedico(0, "Rimac EPS", "1000000001", "T", true);
+        if (SeguroDAO.insertar(seguro)) {
+            SEGURO_PRUEBA = seguro;
+        }
+
+        Apoderado apoderado = new Apoderado(0, "87654321", "Carmen Rosa", "Gutierrez Lopez", "987654321", "Madre", true);
+        if (ApoderadoDAO.insertar(apoderado)) {
+            APODERADO_PRUEBA = apoderado;
+        }
+    }
+
+    public static void cargarMedicamentos() {
+        MedicamentoDAO dao = new MedicamentoDAO();
+        try {
+            if (dao.listar().isEmpty()) {
+                dao.insertar(new Medicamento(0, "Paracetamol 500mg", "Analgesico y antipiretico", 100, 20, 1.50, true));
+                dao.insertar(new Medicamento(0, "Ibuprofeno 400mg", "Antiinflamatorio no esteroideo", 80, 15, 2.00, true));
+                dao.insertar(new Medicamento(0, "Amoxicilina 500mg", "Antibiotico de amplio espectro", 60, 10, 3.50, true));
+            } else {
+                System.out.println("Ya existen medicamentos registrados, no se volvieron a crear.");
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al cargar medicamentos: " + e.getMessage());
+        }
+    }
+
+    public static void cargarAtencionMedica() {
+        List<Cita> citas = CitaLOG.listarCitas();
+        Cita cita = null;
+        for (Cita c : citas) {
+            if ("Programada".equalsIgnoreCase(c.getEstado())) {
+                cita = c;
+                break;
+            }
+        }
+
+        if (cita == null) {
+            System.out.println("No hay citas en estado Programada, no se genero la atencion medica de ejemplo.");
+            return;
+        }
+
+        Map<String, Integer> idsMedicamentos = new HashMap<>();
+        try {
+            for (Medicamento m : new MedicamentoDAO().listar()) {
+                idsMedicamentos.put(m.getNombre(), m.getIdMedicamento());
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al listar medicamentos: " + e.getMessage());
+        }
+
+        AtencionMedica atencion = new AtencionMedica(cita.getCodigo(), "Dolor abdominal y ardor estomacal",
+                "Sin antecedentes de importancia");
+        atencion.setSignosVitales(new SignosVitales(120, 80, 36.8, 70.0, 165.0, 75, 16));
+        atencion.agregarDiagnostico(new Diagnostico("Gastritis aguda", Diagnostico.TIPO_PRESUNTIVO));
+        atencion.agregarDiagnostico(new Diagnostico("Dispepsia funcional", Diagnostico.TIPO_DEFINITIVO));
+        atencion.setTratamiento("Omeprazol 20 mg cada 24 horas por 14 dias y dieta blanda.");
+        atencion.setObservaciones("Control medico en 15 dias.");
+
+        Integer idParacetamol = idsMedicamentos.get("Paracetamol 500mg");
+        Integer idIbuprofeno = idsMedicamentos.get("Ibuprofeno 400mg");
+        if (idParacetamol != null) {
+            atencion.agregarMedicamentoAReceta(idParacetamol, "Paracetamol 500mg", 30, "1 tableta cada 8 horas si hay dolor");
+        }
+        if (idIbuprofeno != null) {
+            atencion.agregarMedicamentoAReceta(idIbuprofeno, "Ibuprofeno 400mg", 20, "1 tableta cada 12 horas por 10 dias");
+        }
+
+        boolean exito = AtencionMedicaDAO.registrarAtencionCompleta(atencion);
+        if (exito) {
+            System.out.println("Atencion medica de ejemplo registrada para la cita " + cita.getCodigo() + ".");
+        } else {
+            System.out.println("No se pudo registrar la atencion medica de ejemplo.");
+        }
     }
 
     public static void cargarMedicos() {

@@ -34,7 +34,7 @@ public class ExamenLaboratorio {
     public int getIdPaciente() {
         return idPaciente;
     }
-    public void setIdPaciente(int idAtencion) {
+    public void setIdPaciente(int idPaciente) {
         this.idPaciente = idPaciente;
     }
     public String getTipoExamen() {

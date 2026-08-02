@@ -206,6 +206,8 @@ public class FrmPrincipal extends javax.swing.JFrame {
                 .agregarCategoria("Atencion Medica")
                     .agregarItem("Formulario de Atencion Medica", e -> {abrirInternalFrame(new IfrmAtencionMedica());},
                             Rol.MEDICO)
+                    .agregarItem("Solicitud de Examen de Laboratorio", e -> {abrirInternalFrame(new IfrmSolicitudLaboratorio());},
+                            Rol.MEDICO)
 
                 .agregarCategoria("Laboratorio")
                     .agregarItem("Solicitudes Pendientes", e -> {abrirInternalFrame(new IfrmLaboratorioAtencion());},

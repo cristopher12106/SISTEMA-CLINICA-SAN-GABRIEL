@@ -5,6 +5,7 @@
 package logica;
 
 import datos.LaboratorioDAO;
+import datos.PacienteDAO;
 import datos.SesionUsuario;
 import entidades.ExamenLaboratorio;
 import entidades.ResultadoExamen;
@@ -31,6 +32,13 @@ public class LaboratorioLOG {
         }
         if (examen.getTipoExamen() == null || examen.getTipoExamen().trim().isEmpty()) {
             throw new IllegalArgumentException("Debe seleccionar un tipo de examen.");
+        }
+
+        // Validar que el paciente exista (RN-16)
+        boolean pacienteExiste = PacienteDAO.listarTodos().stream()
+                .anyMatch(p -> p.getIdPaciente() == examen.getIdPaciente() && p.isEstado());
+        if (!pacienteExiste) {
+            throw new IllegalArgumentException("No existe un paciente activo registrado con el ID: " + examen.getIdPaciente());
         }
 
         try {

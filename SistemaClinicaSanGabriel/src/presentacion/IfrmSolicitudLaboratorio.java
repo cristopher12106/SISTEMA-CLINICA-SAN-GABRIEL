@@ -4,7 +4,9 @@
  */
 package presentacion;
 import entidades.ExamenLaboratorio;
+import entidades.Paciente;
 import logica.LaboratorioLOG;
+import logica.PacienteLOG;
 import javax.swing.JOptionPane;
 /**
  *
@@ -30,7 +32,7 @@ public class IfrmSolicitudLaboratorio extends javax.swing.JInternalFrame {
 
         jLabel1 = new javax.swing.JLabel();
         lblPaciente = new javax.swing.JLabel();
-        txtIdPaciente = new javax.swing.JTextField();
+        txtNHistoriaPaciente = new javax.swing.JTextField();
         lblTipoExamen = new javax.swing.JLabel();
         cmbTipoExamen = new javax.swing.JComboBox<>();
         lblObservacion = new javax.swing.JLabel();
@@ -47,7 +49,7 @@ public class IfrmSolicitudLaboratorio extends javax.swing.JInternalFrame {
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
         jLabel1.setText("Nueva Solicitud de Examen");
 
-        lblPaciente.setText("Codigo de Paciente :");
+        lblPaciente.setText("N Historia del Paciente");
 
         lblTipoExamen.setText("Tipo de Examen :");
 
@@ -95,11 +97,11 @@ public class IfrmSolicitudLaboratorio extends javax.swing.JInternalFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 218, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(cmbTipoExamen, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtIdPaciente, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(txtNHistoriaPaciente, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(181, 181, 181)
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(169, Short.MAX_VALUE))
+                .addContainerGap(159, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
                 .addGap(126, 126, 126)
                 .addComponent(btnRegistrar)
@@ -115,7 +117,7 @@ public class IfrmSolicitudLaboratorio extends javax.swing.JInternalFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblPaciente)
-                    .addComponent(txtIdPaciente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtNHistoriaPaciente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblTipoExamen, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -135,45 +137,47 @@ public class IfrmSolicitudLaboratorio extends javax.swing.JInternalFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnRegistrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarActionPerformed
+        String numHistoria = txtNHistoriaPaciente.getText().trim();
+        String tipoExamen = cmbTipoExamen.getSelectedItem() != null ? cmbTipoExamen.getSelectedItem().toString() : "";
+
+        // Validacion de campo
+        if (numHistoria.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Por favor ingrese el número de historia clínica del paciente.", "Campo Requerido", JOptionPane.WARNING_MESSAGE);
+            txtNHistoriaPaciente.requestFocus();
+            return;
+        }
+
+        // Validar que la historia clinica exista y pertenezca a un paciente registrado
+        Paciente paciente = PacienteLOG.buscarPorHistoriaClinica(numHistoria);
+        if (paciente == null) {
+            JOptionPane.showMessageDialog(this, "No se encontró un paciente registrado con la historia clínica: " + numHistoria, "Paciente no encontrado", JOptionPane.WARNING_MESSAGE);
+            txtNHistoriaPaciente.requestFocus();
+            return;
+        }
+
+        // Creamos el objeto ExamenLaboratorio
+        ExamenLaboratorio examen = new ExamenLaboratorio();
+        examen.setIdPaciente(paciente.getIdPaciente());
+        examen.setTipoExamen(tipoExamen);
+        examen.setEstado("Pendiente");
+        examen.setObservaciones(txtObservacion.getText().trim());
+
+        LaboratorioLOG laboratorioLOG = new LaboratorioLOG();
         try {
-            String strPaciente = txtIdPaciente.getText().trim();
-            String tipoExamen = cmbTipoExamen.getSelectedItem() != null ? cmbTipoExamen.getSelectedItem().toString() : "";
-
-            // Validacion de campos
-            if (strPaciente.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Por favor ingrese el código del paciente.", "Campo Requerido", JOptionPane.WARNING_MESSAGE);
-                txtIdPaciente.requestFocus();
-                return;
-            }
-
-            int idPaciente = Integer.parseInt(strPaciente);
-
-            // Creamos el objeto ExamenLaboratorio
-            ExamenLaboratorio examen = new ExamenLaboratorio();
-            examen.setIdPaciente(idPaciente);
-            examen.setTipoExamen(tipoExamen);
-            examen.setEstado("Pendiente");
-
-            LaboratorioLOG laboratorioLOG = new LaboratorioLOG();
             boolean exito = laboratorioLOG.registrarSolicitud(examen);
 
             if (exito) {
                 JOptionPane.showMessageDialog(this, "Solicitud de laboratorio registrada con éxito.", "Orden Creada", JOptionPane.INFORMATION_MESSAGE);
-                txtIdPaciente.setText("");
+                txtNHistoriaPaciente.setText("");
                 cmbTipoExamen.setSelectedIndex(0);
                 txtObservacion.setText("");
-                txtIdPaciente.requestFocus();
+                txtNHistoriaPaciente.requestFocus();
             } else {
                 JOptionPane.showMessageDialog(this, "No se pudo registrar la solicitud.", "Error", JOptionPane.ERROR_MESSAGE);
             }
-
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "El Código de Paciente debe ser un número entero válido.", "Error de Formato", JOptionPane.ERROR_MESSAGE);
-            txtIdPaciente.requestFocus();
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Error al procesar la solicitud: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
- // TODO add your handling code here:
     }//GEN-LAST:event_btnRegistrarActionPerformed
 
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
@@ -191,7 +195,7 @@ public class IfrmSolicitudLaboratorio extends javax.swing.JInternalFrame {
     private javax.swing.JLabel lblObservacion;
     private javax.swing.JLabel lblPaciente;
     private javax.swing.JLabel lblTipoExamen;
-    private javax.swing.JTextField txtIdPaciente;
+    private javax.swing.JTextField txtNHistoriaPaciente;
     private javax.swing.JTextArea txtObservacion;
     // End of variables declaration//GEN-END:variables
 }

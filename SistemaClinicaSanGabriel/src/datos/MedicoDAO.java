@@ -143,6 +143,21 @@ public class MedicoDAO {
         return lista;
     }
 
+    public static boolean registrarEspecialidad(Especialidad especialidad){
+        String sql = "INSERT INTO Especialidades (codigo, nombre, descripcion) VALUES (?, ?, ?)";
+        int filasAfectadas = 0;
+        Connection cn = ConexionBD.getInstancia().getConexion();
+        try(PreparedStatement ps = cn.prepareStatement(sql)){
+            ps.setString(1, especialidad.getCodigo());
+            ps.setString(2, especialidad.getNombre());
+            ps.setString(3, especialidad.getDescripcion());
+            filasAfectadas = ps.executeUpdate();
+        } catch (SQLException e){
+            System.err.println("Error al registrar especialidad: " + e.getMessage());
+        }
+        return filasAfectadas > 0;
+    }
+
     public static int obtenerIdMedico(String codigo){
         String sql = "SELECT idMedico FROM Medicos WHERE codigo = ?";
         int id = -1;

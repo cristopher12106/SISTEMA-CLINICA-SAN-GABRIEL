@@ -20,8 +20,8 @@ CREATE TABLE IF NOT EXISTS resultado_examen (
 -- Fin de ejecucion primordial --
 
 -- Examenes de laboratorio de prueba --
-INSERT INTO examen_laboratorio (id_atencion, tipo_examen, estado)
+INSERT INTO examen_laboratorio (id_paciente, tipo_examen, estado)
 VALUES 
-(101, 'Hemograma Completo', 'Pendiente'),
-(102, 'Examen de Orina Completo', 'Pendiente'),
-(103, 'Perfil Lipídico', 'Pendiente');
+(1, 'Hemograma Completo', 'Pendiente'),
+(1, 'Examen de Orina Completo', 'Pendiente'),
+(1, 'Perfil Lipídico', 'Pendiente');

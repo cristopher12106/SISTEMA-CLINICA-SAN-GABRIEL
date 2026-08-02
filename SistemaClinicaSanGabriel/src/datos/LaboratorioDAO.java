@@ -21,14 +21,15 @@ public class LaboratorioDAO {
 
     // Registrar una nueva solicitud de examen de laboratorio
     public boolean registrarExamen(ExamenLaboratorio examen) throws SQLException {
-        String sql = "INSERT INTO examen_laboratorio (id_paciente, tipo_examen, estado) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO examen_laboratorio (id_paciente, tipo_examen, observaciones, estado) VALUES (?, ?, ?, ?)";
         
         try (Connection cn = ConexionBD.getInstancia().getConexion();
              PreparedStatement ps = cn.prepareStatement(sql)) {
             
             ps.setInt(1, examen.getIdPaciente());
             ps.setString(2, examen.getTipoExamen());
-            ps.setString(3, examen.getEstado());
+            ps.setString(3, examen.getObservaciones());
+            ps.setString(4, examen.getEstado());
             
             return ps.executeUpdate() > 0;
         }
