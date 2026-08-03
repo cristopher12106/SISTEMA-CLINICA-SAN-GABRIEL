@@ -17,6 +17,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import javax.swing.table.DefaultTableModel;
+import logica.AtencionMedicaLOG;
 import logica.FarmaciaLOG;
 
 /**
@@ -190,11 +191,11 @@ public class IfrmCobroCaja extends javax.swing.JInternalFrame {
 
             },
             new String [] {
-                "MEDICAMENTO", "CANTIDAD", "PRECIO"
+                "MEDICAMENTO", "CANTIDAD", "PRECIO", "SUBTOTAL"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false
+                false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -208,7 +209,9 @@ public class IfrmCobroCaja extends javax.swing.JInternalFrame {
         });
         spMedicamentos.setViewportView(tblMedicamentos);
         if (tblMedicamentos.getColumnModel().getColumnCount() > 0) {
+            tblMedicamentos.getColumnModel().getColumn(1).setResizable(false);
             tblMedicamentos.getColumnModel().getColumn(2).setResizable(false);
+            tblMedicamentos.getColumnModel().getColumn(3).setResizable(false);
         }
 
         IblTotal1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -296,52 +299,6 @@ public class IfrmCobroCaja extends javax.swing.JInternalFrame {
 
     private void btnCobrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCobrarActionPerformed
 
-        try {
-            if (txtAtencion.getText().trim().isEmpty()
-                    || txtFecha.getText().trim().isEmpty()
-                    || txtMonto.getText().trim().isEmpty()) {
-                JOptionPane.showMessageDialog(this,
-                        "Complete todos los campos obligatorios.",
-                        "Datos incompletos",
-                        JOptionPane.WARNING_MESSAGE);
-                return;
-            }
-
-            Pago pago = new Pago();
-
-            pago.setIdAtencion(Integer.parseInt(txtAtencion.getText()));
-            DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-            LocalDate fechaPago = LocalDate.parse(txtFecha.getText().trim(), formato);
-            pago.setFechaPago(fechaPago);
-            pago.setMonto(Double.parseDouble(txtMonto.getText()));
-            pago.setMetodoPago(cmbMetodoPago.getSelectedItem().toString());
-            pago.setEstado(true);
-
-            String tipoComprobante = cmbTipoComprobante.getSelectedItem().toString();
-
-            CajaLOG.registrarPago(pago, tipoComprobante);
-
-        } catch (DateTimeParseException e) {
-
-            JOptionPane.showMessageDialog(this,
-                    "La fecha debe tener el formato dd/MM/yyyy.",
-                    "Fecha inválida",
-                    JOptionPane.WARNING_MESSAGE);
-
-        } catch (NumberFormatException e) {
-
-            JOptionPane.showMessageDialog(this,
-                    "Verifique los datos ingresados.",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
-
-        } catch (Exception e) {
-
-            JOptionPane.showMessageDialog(this,
-                    "Ocurrió un error al registrar el pago.",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
-        }
 
     }//GEN-LAST:event_btnCobrarActionPerformed
 
@@ -354,11 +311,6 @@ public class IfrmCobroCaja extends javax.swing.JInternalFrame {
 
     private void btnLimpiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimpiarActionPerformed
         txtAtencion.setText("");
-        txtPaciente.setText("");
-        txtEspecialidad.setText("");
-        txtFecha.setText("");
-        txtMedico.setText("");
-        txtMonto.setText("");
 
         cmbMetodoPago.setSelectedIndex(0);
         cmbTipoComprobante.setSelectedIndex(0);
@@ -391,7 +343,7 @@ public class IfrmCobroCaja extends javax.swing.JInternalFrame {
 
             if (atencion == null) {
                 JOptionPane.showMessageDialog(this,
-                        "La atención médica no existe.",
+                        "No existe la atención médica.",
                         "Búsqueda",
                         JOptionPane.INFORMATION_MESSAGE);
                 return;
@@ -399,7 +351,7 @@ public class IfrmCobroCaja extends javax.swing.JInternalFrame {
 
             RecetaMedica receta = atencion.getReceta();
 
-            if (receta == null || receta.getDetalles().isEmpty()) {
+            if (receta == null || !receta.tieneDetalles()) {
                 JOptionPane.showMessageDialog(this,
                         "La atención no tiene medicamentos registrados.",
                         "Información",
@@ -422,21 +374,22 @@ public class IfrmCobroCaja extends javax.swing.JInternalFrame {
                 double subtotal = precio * detalle.getCantidad();
 
                 modelo.addRow(new Object[]{
-                    detalle.getNombreMedicamento(),
+                    medicamento.getNombre(),
                     detalle.getCantidad(),
-                    precio
+                    precio,
+                    subtotal
                 });
 
                 total += subtotal;
             }
 
-            lblTotal.setText(String.format("S/ %.2f", total));
+            lblTotal.setText(String.format("S/. %.2f", total));
 
         } catch (NumberFormatException e) {
 
             JOptionPane.showMessageDialog(this,
-                    "El ID de atención debe ser un número.",
-                    "Dato inválido",
+                    "El ID de atención debe ser numérico.",
+                    "Error",
                     JOptionPane.WARNING_MESSAGE);
 
         } catch (Exception e) {
