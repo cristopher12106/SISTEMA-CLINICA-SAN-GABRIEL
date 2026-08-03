@@ -10,4 +10,4 @@ CREATE TABLE IF NOT EXISTS seguro_medico (
 -- Fin de ejecucion primordial -- 
 -- Seguro medico de prueba
 INSERT INTO seguro_medico (compania, numero_poliza, tipo_cobertura, estado)
-VALUES ('Rimac Seguros', 'POL-001', 'Completa', TRUE);
+VALUES ('Rimac Seguros', '1234567890', 'T', TRUE);

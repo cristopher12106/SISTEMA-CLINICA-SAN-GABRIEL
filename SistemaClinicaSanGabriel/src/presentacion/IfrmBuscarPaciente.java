@@ -65,7 +65,7 @@ public class IfrmBuscarPaciente extends javax.swing.JInternalFrame {
 
         initComponents();
 
-        // Agregar componentes dinámicos al layout después de initComponents
+        // Agregar componentes dinámicos después de initComponents
         agregarComponentesDinamicos();
     }
     private void btnBuscarPorDniActionPerformed(java.awt.event.ActionEvent evt) {
@@ -613,7 +613,7 @@ public class IfrmBuscarPaciente extends javax.swing.JInternalFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        // 3) Agregar botón Editar y checkbox al layout principal (junto a btnSalir)
+        // Botón Editar y checkbox al layout principal (junto a btnSalir)
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()

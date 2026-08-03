@@ -39,7 +39,8 @@ public class RecetaDAO {
             }
         }
 
-        // 2. Insertar los detalles/medicamentos de la Receta y descontar stock (RN-28)
+        // 2. Insertar los detalles/medicamentos de la Receta (solo se registra la indicacion;
+        //    el descuento de stock se realiza en Farmacia al despachar la entrega)
         if (receta.getDetalles() != null && !receta.getDetalles().isEmpty()) {
             try (PreparedStatement psDetalle = cn.prepareStatement(sqlDetalle)) {
                 for (DetalleReceta detalle : receta.getDetalles()) {
@@ -48,10 +49,72 @@ public class RecetaDAO {
                     psDetalle.setInt(3, detalle.getCantidad());
                     psDetalle.setString(4, detalle.getIndicacion());
                     psDetalle.executeUpdate();
-
-                    MedicamentoDAO.descontarStock(detalle.getIdMedicamento(), detalle.getCantidad(), cn);
                 }
             }
         }
+    }
+
+    public static RecetaMedica obtenerRecetaConDetalles(int idReceta) {
+        String sqlReceta = "SELECT idReceta, idAtencion, despachada FROM recetas_medicas WHERE idReceta = ?";
+        RecetaMedica receta = null;
+
+        try (Connection cn = ConexionBD.getInstancia().getConexion();
+             PreparedStatement ps = cn.prepareStatement(sqlReceta)) {
+            ps.setInt(1, idReceta);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    receta = new RecetaMedica();
+                    receta.setIdReceta(rs.getInt("idReceta"));
+                    receta.setIdAtencion(rs.getInt("idAtencion"));
+                    receta.setDespachada(rs.getBoolean("despachada"));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al obtener receta: " + e.getMessage());
+            return null;
+        }
+
+        if (receta == null) {
+            return null;
+        }
+
+        String sqlDetalles = "SELECT dr.idDetalle, dr.idMedicamento, dr.cantidad, dr.indicacion, "
+                           + "m.nombre AS nombreMedicamento "
+                           + "FROM detalle_receta dr "
+                           + "INNER JOIN medicamento m ON dr.idMedicamento = m.id_medicamento "
+                           + "WHERE dr.idReceta = ?";
+        try (Connection cn = ConexionBD.getInstancia().getConexion();
+             PreparedStatement ps = cn.prepareStatement(sqlDetalles)) {
+            ps.setInt(1, idReceta);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    DetalleReceta detalle = new DetalleReceta();
+                    detalle.setIdDetalle(rs.getInt("idDetalle"));
+                    detalle.setIdMedicamento(rs.getInt("idMedicamento"));
+                    detalle.setCantidad(rs.getInt("cantidad"));
+                    detalle.setIndicacion(rs.getString("indicacion"));
+                    detalle.setNombreMedicamento(rs.getString("nombreMedicamento"));
+                    receta.agregarDetalle(detalle);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al obtener detalles de la receta: " + e.getMessage());
+            return null;
+        }
+
+        return receta;
+    }
+
+    public static boolean marcarDespachada(int idReceta) {
+        String sql = "UPDATE recetas_medicas SET despachada = TRUE WHERE idReceta = ?";
+        int filasAfectadas = 0;
+        try (Connection cn = ConexionBD.getInstancia().getConexion();
+             PreparedStatement ps = cn.prepareStatement(sql)) {
+            ps.setInt(1, idReceta);
+            filasAfectadas = ps.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("Error al marcar receta como despachada: " + e.getMessage());
+        }
+        return filasAfectadas > 0;
     }
 }
