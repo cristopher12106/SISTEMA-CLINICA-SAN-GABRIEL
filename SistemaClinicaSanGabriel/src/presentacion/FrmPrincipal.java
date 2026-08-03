@@ -222,17 +222,13 @@ public class FrmPrincipal extends javax.swing.JFrame {
                             Rol.FARMACEUTICO, Rol.ADMINISTRADOR)
 
                 .agregarCategoria("Caja")
-                    .agregarItem("Registrar Pago", e -> {},
+                    .agregarItem("Registrar Pago", e -> {abrirInternalFrame(new IfrmCobroCaja());},
                             Rol.CAJERO)
-                    .agregarItem("Emitir Comprobante", e -> {},
+                    .agregarItem("Emitir Comprobante", e -> {abrirInternalFrame(new IfrmComprobante());},
                             Rol.CAJERO)
 
                 .agregarCategoria("Reportes")
-                    .agregarItem("Pacientes Por Especialidad", e -> {},
-                            Rol.DIRECTOR_MEDICO, Rol.ADMINISTRADOR)
-                    .agregarItem("Ingresos Diarios", e -> {},
-                            Rol.CAJERO, Rol.DIRECTOR_MEDICO, Rol.ADMINISTRADOR)
-                    .agregarItem("Exportar Reportes", e -> {},
+                    .agregarItem("Dashboard Reportes", e -> {abrirInternalFrame(new IfrmDashboardReportes());},
                             Rol.DIRECTOR_MEDICO, Rol.ADMINISTRADOR)
 
                 .build(usuarioActual.getRol());
