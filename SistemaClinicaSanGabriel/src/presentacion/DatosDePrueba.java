@@ -39,9 +39,35 @@ public class DatosDePrueba {
     private static SeguroMedico SEGURO_PRUEBA;
     private static Apoderado APODERADO_PRUEBA;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
+        cargarTodo();
+    }
+
+    public static void cargarTodo() throws InterruptedException {
+        cargarUsuarios();
+        Thread.sleep(2000);
+
+        cargarPacientes();
+        Thread.sleep(2000);
+
+        cargarSeguroYApoderado();
+        Thread.sleep(2000);
+
+        cargarEspecialidades();
+        Thread.sleep(2000);
+
+        cargarMedicos();
+        Thread.sleep(2000);
+
+        cargarHorarios();
+        Thread.sleep(2000);
+
+        cargarCitas();
+        Thread.sleep(2000);
+
         cargarMedicamentos();
     }
+
     //1.USUARIOS
     public static void cargarUsuarios() {
         SesionUsuario.getInstance().iniciarSesion(new Usuario("admin", "%Admin2026", Rol.ADMINISTRADOR, true));
