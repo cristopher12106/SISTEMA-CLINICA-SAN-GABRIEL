@@ -11,6 +11,22 @@ import javax.swing.JOptionPane;
 
 public class AtencionMedicaLOG {
 
+    public AtencionMedica obtenerAtencion(int idAtencion) {
+        if (idAtencion <= 0) {
+            JOptionPane.showMessageDialog(null, "El id de la atención debe ser mayor a 0.", "Dato Incorrecto", JOptionPane.WARNING_MESSAGE);
+            return null;
+        }
+
+        AtencionMedica atencion = AtencionMedicaDAO.buscarPorId(idAtencion);
+
+        if (atencion == null) {
+            JOptionPane.showMessageDialog(null, "No se encontró una atención médica con el id " + idAtencion + ".", "No encontrada", JOptionPane.WARNING_MESSAGE);
+            return null;
+        }
+
+        return atencion;
+    }
+
     public boolean registrarAtencion(AtencionMedica atencion) {
 
         // 1. Validaciones generales de la Atención

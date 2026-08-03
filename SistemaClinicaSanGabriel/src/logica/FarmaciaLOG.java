@@ -21,6 +21,18 @@ public class FarmaciaLOG {
     public FarmaciaLOG() {
         this.medicamentoDAO = new MedicamentoDAO();
     }
+    // Obtiene un medicamento por su id
+    public Medicamento obtenerMedicamento(int idMedicamento) throws Exception {
+        if (idMedicamento <= 0) {
+            throw new IllegalArgumentException("El id del medicamento debe ser mayor a 0.");
+        }
+        try {
+            return medicamentoDAO.obtenerPorId(idMedicamento);
+        } catch (SQLException e) {
+            throw new Exception("Error al consultar el medicamento por id: " + e.getMessage());
+        }
+    }
+
     // Consulta inventario
     public List<Medicamento> obtenerInventario() throws Exception {
         try {

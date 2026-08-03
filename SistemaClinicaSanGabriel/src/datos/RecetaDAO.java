@@ -12,12 +12,6 @@ import java.sql.Statement;
 
 public class RecetaDAO {
 
-    /**
-     * Inserta la receta y sus detalles dentro de una conexión con transacción activa.
-     * @param receta Objeto RecetaMedica con sus detalles cargados.
-     * @param cn Conexión SQL proveniente del AtencionMedicaDAO (gestora de la transacción).
-     * @throws SQLException Si ocurre algún error en la inserción.
-     */
     public static void registrarReceta(RecetaMedica receta, Connection cn) throws SQLException {
         String sqlReceta = "INSERT INTO recetas_medicas (idAtencion) VALUES (?)";
         String sqlDetalle = "INSERT INTO detalle_receta (idReceta, idMedicamento, cantidad, indicacion) VALUES (?, ?, ?, ?)";
