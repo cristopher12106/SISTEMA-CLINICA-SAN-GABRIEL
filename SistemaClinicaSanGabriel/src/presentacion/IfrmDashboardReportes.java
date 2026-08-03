@@ -125,7 +125,7 @@ public class IfrmDashboardReportes extends javax.swing.JInternalFrame {
         lblIngresos = new javax.swing.JLabel();
         IblTitulo8 = new javax.swing.JLabel();
         lblTipoReporte = new javax.swing.JLabel();
-        cmbTipoReporte = new javax.swing.JComboBox<String>();
+        cmbTipoReporte = new javax.swing.JComboBox<>();
         btnGenerar = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblReporte = new javax.swing.JTable();
@@ -261,7 +261,7 @@ public class IfrmDashboardReportes extends javax.swing.JInternalFrame {
         lblTipoReporte.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         lblTipoReporte.setText("Tipo reporte");
 
-        cmbTipoReporte.setModel(new javax.swing.DefaultComboBoxModel<String>(new String[] { "Ingresos diarios", "Pacientes por especialidad" }));
+        cmbTipoReporte.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Ingresos diarios", "Pacientes por especialidad" }));
 
         btnGenerar.setText("Generar");
         btnGenerar.setToolTipText("");
