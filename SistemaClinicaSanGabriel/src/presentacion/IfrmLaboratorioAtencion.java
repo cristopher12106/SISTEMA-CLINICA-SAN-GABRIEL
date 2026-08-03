@@ -4,7 +4,9 @@
  */
 package presentacion;
 import logica.LaboratorioLOG;
+import datos.PacienteDAO;
 import entidades.ExamenLaboratorio;
+import entidades.Paciente;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -34,9 +36,14 @@ public class IfrmLaboratorioAtencion extends javax.swing.JInternalFrame {
         try {
             List<ExamenLaboratorio> lista = laboratorioLOG.listarSolicitudesPendientes();
             for (ExamenLaboratorio ex : lista) {
+                String numeroHistoria = "";
+                Paciente paciente = PacienteDAO.buscarPorId(ex.getIdPaciente());
+                if (paciente != null) {
+                    numeroHistoria = paciente.getNumeroHistoriaClinica();
+                }
                 modelo.addRow(new Object[]{
                     ex.getIdExamen(),
-                    ex.getIdPaciente(),
+                    numeroHistoria,
                     ex.getTipoExamen(),
                     ex.getEstado(),
                     ex.getFechaSolicitud()
@@ -81,7 +88,7 @@ public class IfrmLaboratorioAtencion extends javax.swing.JInternalFrame {
                 {null, null, null, null, null}
             },
             new String [] {
-                "ID Examen", "ID Atencion", "Tipo Examen", "Estado", "Fecha Solicitud"
+                "ID Examen", "N Historia Paciente", "Tipo Examen", "Estado", "Fecha Solicitud"
             }
         ));
         tblExamenes.addMouseListener(new java.awt.event.MouseAdapter() {

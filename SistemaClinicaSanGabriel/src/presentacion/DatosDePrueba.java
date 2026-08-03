@@ -40,7 +40,7 @@ public class DatosDePrueba {
     private static Apoderado APODERADO_PRUEBA;
 
     public static void main(String[] args) {
-        
+        cargarMedicamentos();
     }
     //1.USUARIOS
     public static void cargarUsuarios() {
@@ -269,7 +269,7 @@ public class DatosDePrueba {
         }
     }
 
-    //4.ATENCION MEDICA Y REGISTRO CLINICO
+    //4 y 5.ATENCION MEDICA Y REGISTRO CLINICO, FARMACIO LABORATORIO Y INVENTARIO
     public static void cargarMedicamentos() {
         MedicamentoDAO dao = new MedicamentoDAO();
         try {
@@ -277,6 +277,23 @@ public class DatosDePrueba {
                 dao.insertar(new Medicamento(0, "Paracetamol 500mg", "Analgesico y antipiretico", 100, 20, 1.50, true));
                 dao.insertar(new Medicamento(0, "Ibuprofeno 400mg", "Antiinflamatorio no esteroideo", 80, 15, 2.00, true));
                 dao.insertar(new Medicamento(0, "Amoxicilina 500mg", "Antibiotico de amplio espectro", 60, 10, 3.50, true));
+                dao.insertar(new Medicamento(0, "Omeprazol 20mg", "Inhibidor de la bomba de protones", 90, 15, 4.20, true));
+                dao.insertar(new Medicamento(0, "Losartan 50mg", "Antihipertensivo", 70, 10, 5.00, true));
+                dao.insertar(new Medicamento(0, "Metformina 850mg", "Antidiabetico oral", 75, 12, 3.80, true));
+                dao.insertar(new Medicamento(0, "Amlodipino 5mg", "Antihipertensivo calcioantagonista", 65, 10, 4.50, true));
+                dao.insertar(new Medicamento(0, "Azitromicina 500mg", "Antibiotico macrolido", 50, 8, 6.00, true));
+                dao.insertar(new Medicamento(0, "Diclofenaco 50mg", "Antiinflamatorio", 85, 15, 2.50, true));
+                dao.insertar(new Medicamento(0, "Loratadina 10mg", "Antihistaminico", 95, 20, 2.20, true));
+                dao.insertar(new Medicamento(0, "Salbutamol 100mcg", "Broncodilatador (inhalador)", 30, 5, 12.00, true));
+                dao.insertar(new Medicamento(0, "Clorfenamina 4mg", "Antihistaminico", 110, 20, 1.80, true));
+                dao.insertar(new Medicamento(0, "Albendazol 400mg", "Antiparasitario", 70, 10, 3.00, true));
+                dao.insertar(new Medicamento(0, "Vitamina C 500mg", "Suplemento vitaminico", 120, 25, 1.20, true));
+                dao.insertar(new Medicamento(0, "Hierro 100mg", "Suplemento de hierro", 90, 15, 2.00, true));
+                dao.insertar(new Medicamento(0, "Acido Folico 1mg", "Suplemento", 80, 15, 1.50, true));
+                dao.insertar(new Medicamento(0, "Prednisona 20mg", "Corticosteroide", 45, 8, 3.00, true));
+                dao.insertar(new Medicamento(0, "Warfarina 5mg", "Anticoagulante", 25, 5, 7.50, true));
+                dao.insertar(new Medicamento(0, "Insulina NPH 100UI/ml", "Antidiabetico", 20, 4, 25.00, true));
+                dao.insertar(new Medicamento(0, "Tramadol 50mg", "Analgesico opioide", 40, 6, 8.00, true));
             } else {
                 System.out.println("Ya existen medicamentos registrados, no se volvieron a crear.");
             }
@@ -287,6 +304,14 @@ public class DatosDePrueba {
 
 
 
+
+
+
+
+
+
+
+    //FUNCIONES AUXILIARES
 
     private static void registrarMedico(String username, String codigo, String colegiatura,
             String dni, String nombres, String apellidos, String telefono, String correo,

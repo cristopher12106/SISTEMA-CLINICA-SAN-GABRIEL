@@ -1,11 +1,12 @@
 -- =====================================================================
---  SCRIPT PRINCIPAL - CLÍNICA SAN GABRIEL (MÓDULOS 1, 2, 3 Y 4)
+--  SCRIPT PRINCIPAL - CLÍNICA SAN GABRIEL (MÓDULOS 1 AL 5)
 --  Orden de ejecución separado por módulos.
 --  Al inicio: RESET total de la base de datos (DROP + CREATE).
 --  Módulo 1: Seguridad, Autenticación y Menú Dinámico
 --  Módulo 2: Gestión de Pacientes y Seguro Médico
 --  Módulo 3: Gestión de Médicos y Programación de Citas
 --  Módulo 4: Atención Médica y Registro Clínico
+--  Módulo 5: Laboratorio y Farmacia
 --  NOTA: No se insertan datos; solo se crean las tablas.
 -- =====================================================================
 
@@ -216,6 +217,7 @@ CREATE TABLE recetas_medicas (
     idReceta INT AUTO_INCREMENT PRIMARY KEY,
     idAtencion INT NOT NULL,
     fechaEmision DATETIME DEFAULT CURRENT_TIMESTAMP,
+    despachada BOOLEAN NOT NULL DEFAULT FALSE, -- TRUE si Farmacia ya despachó la receta
     CONSTRAINT fk_receta_atencion FOREIGN KEY (idAtencion) REFERENCES atenciones_medicas(idAtencion) ON DELETE CASCADE
 );
 
@@ -228,6 +230,48 @@ CREATE TABLE detalle_receta (
     indicacion TEXT NOT NULL,
     CONSTRAINT fk_detalle_receta FOREIGN KEY (idReceta) REFERENCES recetas_medicas(idReceta) ON DELETE CASCADE,
     CONSTRAINT fk_detalle_medicamento FOREIGN KEY (idMedicamento) REFERENCES medicamento(id_medicamento)
+);
+
+-- =====================================================================
+-- MÓDULO 5: LABORATORIO Y FARMACIA
+-- Entidades: ExamenLaboratorio, ResultadoExamen, EntregaMedicamento
+-- Relación con el módulo 4: la tabla medicamento (4.0) es gestionada por
+-- Farmacia (módulo 5) y es referenciada por detalle_receta. Además,
+-- entrega_medicamento.id_atencion apunta a atenciones_medicas (módulo 4),
+-- y examen_laboratorio.id_paciente apunta a paciente (módulo 2).
+-- Orden: examen_laboratorio, resultado_examen, entrega_medicamento.
+-- =====================================================================
+
+-- 5.1 Exámenes de Laboratorio (dependencia: paciente, módulo 2)
+CREATE TABLE IF NOT EXISTS examen_laboratorio (
+    id_examen INT AUTO_INCREMENT PRIMARY KEY,
+    id_paciente INT NOT NULL,
+    tipo_examen VARCHAR(100) NOT NULL,
+    observaciones VARCHAR(255),
+    estado VARCHAR(20) NOT NULL DEFAULT 'Pendiente', -- 'Pendiente', 'En proceso', 'Finalizado', 'Entregado'
+    fecha_solicitud DATETIME DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_examen_paciente FOREIGN KEY (id_paciente) REFERENCES paciente(id_paciente)
+);
+
+-- 5.2 Resultados de Exámenes (dependencia: examen_laboratorio)
+CREATE TABLE IF NOT EXISTS resultado_examen (
+    id_resultado INT AUTO_INCREMENT PRIMARY KEY,
+    id_examen INT NOT NULL,
+    detalle_resultado TEXT NOT NULL,
+    observaciones VARCHAR(255),
+    fecha_registro DATETIME DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_resultado_examen FOREIGN KEY (id_examen) REFERENCES examen_laboratorio(id_examen) ON DELETE CASCADE
+);
+
+-- 5.3 Entregas de Medicamentos (dependencia: atenciones_medicas, módulo 4, y medicamento, 4.0)
+CREATE TABLE IF NOT EXISTS entrega_medicamento (
+    id_entrega INT AUTO_INCREMENT PRIMARY KEY,
+    id_atencion INT NOT NULL,
+    id_medicamento INT NOT NULL,
+    cantidad INT NOT NULL,
+    fecha_entrega DATETIME DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_entrega_atencion FOREIGN KEY (id_atencion) REFERENCES atenciones_medicas(idAtencion),
+    CONSTRAINT fk_entrega_medicamento FOREIGN KEY (id_medicamento) REFERENCES medicamento(id_medicamento)
 );
 
 -- =====================================================================
@@ -252,3 +296,7 @@ SELECT * FROM signos_vitales;
 SELECT * FROM diagnosticos_atencion;
 SELECT * FROM recetas_medicas;
 SELECT * FROM detalle_receta;
+
+SELECT * FROM examen_laboratorio;
+SELECT * FROM resultado_examen;
+SELECT * FROM entrega_medicamento;
