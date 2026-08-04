@@ -3,8 +3,11 @@ package logica;
 import datos.ReportesDAO;
 import entidades.ReporteAtencion;
 import entidades.ReporteIngresos;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
+import logica.builder.Reporte;
+import logica.builder.ReporteBuilder;
 
 public class ReporteLOG {
 
@@ -50,5 +53,27 @@ public class ReporteLOG {
 
     public static int obtenerCantidadFacturas() {
         return ReportesDAO.obtenerCantidadFacturas();
+    }
+
+    public static Reporte construirReporteIngresos() {
+
+        ArrayList<ReporteIngresos> lista = obtenerReporteIngresosDiarios();
+
+        return new ReporteBuilder()
+                .setTitulo("Reporte de Ingresos Diarios")
+                .setFechaGeneracion(LocalDate.now())
+                .setDatos(lista)
+                .build();
+    }
+
+    public static Reporte construirReporteEspecialidad() {
+
+        ArrayList<ReporteAtencion> lista = obtenerReportePacientesPorEspecialidad();
+
+        return new ReporteBuilder()
+                .setTitulo("Reporte de Pacientes por Especialidad")
+                .setFechaGeneracion(LocalDate.now())
+                .setDatos(lista)
+                .build();
     }
 }

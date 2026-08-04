@@ -12,8 +12,12 @@ import javax.swing.table.DefaultTableModel;
 import entidades.ReporteAtencion;
 import entidades.ReporteIngresos;
 import java.util.ArrayList;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import logica.ReporteLOG;
+import logica.adapter.ExportadorReporte;
+import logica.adapter.ReporteExcelAdapter;
+import logica.adapter.ReportePdfAdapter;
 
 public class IfrmDashboardReportes extends javax.swing.JInternalFrame {
 
@@ -30,34 +34,22 @@ public class IfrmDashboardReportes extends javax.swing.JInternalFrame {
         cmbTipoReporte.removeAllItems();
         cmbTipoReporte.addItem("Ingresos diarios");
         cmbTipoReporte.addItem("Pacientes por especialidad");
-
         DefaultTableModel modelo = new DefaultTableModel();
         modelo.setRowCount(0);
         tblReporte.setModel(modelo);
-        tblReporte.setEnabled(false);
-
-        //*lblIngresos.setText("S/. 0.00");
-        //*lblPagos.setText("0");
-        //*lblBoletas.setText("0");
-        //*lblFacturas.setText("0");
         btnExportarPDF.setEnabled(false);
         btnExportarExcel.setEnabled(false);
-
         actualizarTarjetas();
     }
 
     private void cargarReporteIngresos() {
-
         ArrayList<ReporteIngresos> lista = ReporteLOG.obtenerReporteIngresosDiarios();
-
         DefaultTableModel modelo = new DefaultTableModel();
-
         modelo.addColumn("Fecha");
         modelo.addColumn("Cantidad de Pagos");
         modelo.addColumn("Total Ingresos");
 
         for (ReporteIngresos r : lista) {
-
             modelo.addRow(new Object[]{
                 r.getFecha(),
                 r.getCantidadPagos(),
@@ -69,7 +61,6 @@ public class IfrmDashboardReportes extends javax.swing.JInternalFrame {
     }
 
     private void cargarReporteEspecialidad() {
-
         ArrayList<ReporteAtencion> lista = ReporteLOG.obtenerReportePacientesPorEspecialidad();
         DefaultTableModel modelo = new DefaultTableModel();
 
@@ -77,7 +68,6 @@ public class IfrmDashboardReportes extends javax.swing.JInternalFrame {
         modelo.addColumn("Cantidad de Pacientes");
 
         for (ReporteAtencion r : lista) {
-
             modelo.addRow(new Object[]{
                 r.getEspecialidad(),
                 r.getCantidadPacientes()
@@ -88,7 +78,6 @@ public class IfrmDashboardReportes extends javax.swing.JInternalFrame {
     }
 
     private void actualizarTarjetas() {
-
         lblIngresos.setText(String.format("S/. %.2f",
                 ReporteLOG.obtenerTotalIngresos()));
 
@@ -415,10 +404,18 @@ public class IfrmDashboardReportes extends javax.swing.JInternalFrame {
         } else {
             cargarReporteEspecialidad();
         }
+        if (tblReporte.getRowCount() == 0) {
 
+            JOptionPane.showMessageDialog(this,
+                    "No existen datos para generar el reporte.",
+                    "Reporte",
+                    JOptionPane.INFORMATION_MESSAGE);
+            btnExportarPDF.setEnabled(false);
+            btnExportarExcel.setEnabled(false);
+            return;
+        }
         btnExportarPDF.setEnabled(true);
         btnExportarExcel.setEnabled(true);
-
     }//GEN-LAST:event_btnGenerarActionPerformed
 
     private void tblReporteMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblReporteMouseClicked
@@ -427,11 +424,23 @@ public class IfrmDashboardReportes extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_tblReporteMouseClicked
 
     private void btnExportarPDFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExportarPDFActionPerformed
-        // TODO add your handling code here:
+        if (tblReporte.getRowCount() == 0) {
+            JOptionPane.showMessageDialog(this, "No hay datos en la tabla para exportar.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        ExportadorReporte exportador = new ReportePdfAdapter();
+        exportador.exportar(tblReporte, cmbTipoReporte.getSelectedItem().toString());
     }//GEN-LAST:event_btnExportarPDFActionPerformed
 
     private void btnExportarExcelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExportarExcelActionPerformed
-        // TODO add your handling code here:
+        if (tblReporte.getRowCount() == 0) {
+            JOptionPane.showMessageDialog(this, "No hay datos en la tabla para exportar.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        ExportadorReporte exportador = new ReporteExcelAdapter();
+        exportador.exportar(tblReporte, cmbTipoReporte.getSelectedItem().toString());
     }//GEN-LAST:event_btnExportarExcelActionPerformed
 
     private void btnCerrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCerrarActionPerformed
