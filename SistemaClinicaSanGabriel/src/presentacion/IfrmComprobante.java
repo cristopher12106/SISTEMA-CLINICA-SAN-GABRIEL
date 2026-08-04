@@ -8,12 +8,12 @@ import datos.ComprobanteDAO;
 import entidades.Comprobante;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
  * @author Cristopher
  */
-
 public class IfrmComprobante extends javax.swing.JInternalFrame {
 
     /**
@@ -21,7 +21,7 @@ public class IfrmComprobante extends javax.swing.JInternalFrame {
      */
     public IfrmComprobante() {
         initComponents();
-        
+
     }
 
     /**
@@ -36,14 +36,10 @@ public class IfrmComprobante extends javax.swing.JInternalFrame {
         pnlPricipal = new javax.swing.JPanel();
         pnlBusqueda = new javax.swing.JPanel();
         IblTitulo3 = new javax.swing.JLabel();
-        IblBuscarPor = new javax.swing.JLabel();
-        cmbBuscarPor = new javax.swing.JComboBox<>();
         IblBusqueda = new javax.swing.JLabel();
         txtBusqueda = new javax.swing.JTextField();
         btnBuscar = new javax.swing.JButton();
         IblTitulo = new javax.swing.JLabel();
-        spComprobantes = new javax.swing.JScrollPane();
-        tblComprobantes = new javax.swing.JTable();
         pnlDetalle = new javax.swing.JPanel();
         IblTitulo4 = new javax.swing.JLabel();
         IblNumero = new javax.swing.JLabel();
@@ -60,6 +56,8 @@ public class IfrmComprobante extends javax.swing.JInternalFrame {
         btnLimpiar = new javax.swing.JButton();
         btnCerrar = new javax.swing.JButton();
         btnImprimir = new javax.swing.JButton();
+        spComprobantes = new javax.swing.JScrollPane();
+        tblComprobantes = new javax.swing.JTable();
 
         pnlPricipal.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
@@ -68,14 +66,8 @@ public class IfrmComprobante extends javax.swing.JInternalFrame {
         IblTitulo3.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         IblTitulo3.setText("Buscar Comprobante");
 
-        IblBuscarPor.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        IblBuscarPor.setText("Busca por");
-
-        cmbBuscarPor.setEditable(true);
-        cmbBuscarPor.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Número", "Paciente", "Fecha" }));
-
         IblBusqueda.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        IblBusqueda.setText("Valor");
+        IblBusqueda.setText("Número de comprobante:");
 
         btnBuscar.setText("Buscar");
         btnBuscar.setToolTipText("");
@@ -90,17 +82,13 @@ public class IfrmComprobante extends javax.swing.JInternalFrame {
         pnlBusquedaLayout.setHorizontalGroup(
             pnlBusquedaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlBusquedaLayout.createSequentialGroup()
-                .addGap(96, 96, 96)
-                .addComponent(IblBuscarPor)
-                .addGap(45, 45, 45)
-                .addComponent(cmbBuscarPor, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(178, Short.MAX_VALUE)
                 .addComponent(IblBusqueda)
-                .addGap(33, 33, 33)
-                .addComponent(txtBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(149, 149, 149)
+                .addGap(49, 49, 49)
+                .addComponent(txtBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 211, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(114, 114, 114)
                 .addComponent(btnBuscar)
-                .addGap(103, 103, 103))
+                .addGap(149, 149, 149))
             .addGroup(pnlBusquedaLayout.createSequentialGroup()
                 .addGap(62, 62, 62)
                 .addComponent(IblTitulo3)
@@ -112,8 +100,6 @@ public class IfrmComprobante extends javax.swing.JInternalFrame {
                 .addComponent(IblTitulo3)
                 .addGap(24, 24, 24)
                 .addGroup(pnlBusquedaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(IblBuscarPor)
-                    .addComponent(cmbBuscarPor, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(IblBusqueda)
                     .addComponent(txtBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnBuscar))
@@ -122,24 +108,6 @@ public class IfrmComprobante extends javax.swing.JInternalFrame {
 
         IblTitulo.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         IblTitulo.setText("GESTION DE COMPROBANTES");
-
-        tblComprobantes.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {},
-                {},
-                {},
-                {}
-            },
-            new String [] {
-
-            }
-        ));
-        tblComprobantes.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                tblComprobantesMouseClicked(evt);
-            }
-        });
-        spComprobantes.setViewportView(tblComprobantes);
 
         pnlDetalle.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
@@ -183,30 +151,30 @@ public class IfrmComprobante extends javax.swing.JInternalFrame {
                     .addGroup(pnlDetalleLayout.createSequentialGroup()
                         .addGap(96, 96, 96)
                         .addGroup(pnlDetalleLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addGroup(pnlDetalleLayout.createSequentialGroup()
-                                .addComponent(IblNumero)
-                                .addGap(34, 34, 34)
-                                .addComponent(txtNumero, javax.swing.GroupLayout.PREFERRED_SIZE, 174, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(89, 89, 89))
-                            .addGroup(pnlDetalleLayout.createSequentialGroup()
-                                .addComponent(IblIdPago)
-                                .addGap(34, 34, 34)
-                                .addComponent(txtIdPago, javax.swing.GroupLayout.PREFERRED_SIZE, 218, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(45, 45, 45))
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, pnlDetalleLayout.createSequentialGroup()
                                 .addComponent(IblFecha)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(txtFecha, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(87, 87, 87)))
-                        .addGap(18, 18, 18)
+                                .addComponent(txtFecha, javax.swing.GroupLayout.PREFERRED_SIZE, 218, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(pnlDetalleLayout.createSequentialGroup()
+                                .addComponent(IblNumero)
+                                .addGap(34, 34, 34)
+                                .addComponent(txtNumero, javax.swing.GroupLayout.PREFERRED_SIZE, 218, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(pnlDetalleLayout.createSequentialGroup()
+                                .addComponent(IblIdPago)
+                                .addGap(34, 34, 34)
+                                .addComponent(txtIdPago, javax.swing.GroupLayout.PREFERRED_SIZE, 218, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(63, 63, 63)
                         .addGroup(pnlDetalleLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(IblTipo)
                             .addComponent(IblTotal))
-                        .addGap(41, 41, 41)
                         .addGroup(pnlDetalleLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtTipo, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtTotal, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(pnlDetalleLayout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 61, Short.MAX_VALUE)
+                                .addComponent(txtTipo, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(pnlDetalleLayout.createSequentialGroup()
+                                .addGap(41, 41, 41)
+                                .addComponent(txtTotal)))))
+                .addGap(165, 165, 165))
         );
         pnlDetalleLayout.setVerticalGroup(
             pnlDetalleLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -271,6 +239,27 @@ public class IfrmComprobante extends javax.swing.JInternalFrame {
             }
         });
 
+        tblComprobantes.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
+            },
+            new String [] {
+                "NUMERO", "ID PAGO", "FECHA", "TIPO", "TOTAL"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        spComprobantes.setViewportView(tblComprobantes);
+
         javax.swing.GroupLayout pnlPricipalLayout = new javax.swing.GroupLayout(pnlPricipal);
         pnlPricipal.setLayout(pnlPricipalLayout);
         pnlPricipalLayout.setHorizontalGroup(
@@ -279,47 +268,50 @@ public class IfrmComprobante extends javax.swing.JInternalFrame {
                 .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(IblTitulo)
                 .addGap(347, 347, 347))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlPricipalLayout.createSequentialGroup()
-                .addContainerGap(18, Short.MAX_VALUE)
-                .addGroup(pnlPricipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(pnlPricipalLayout.createSequentialGroup()
-                        .addGroup(pnlPricipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(pnlDetalle, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, pnlPricipalLayout.createSequentialGroup()
-                                .addGap(16, 16, 16)
-                                .addGroup(pnlPricipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(pnlBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 830, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(spComprobantes, javax.swing.GroupLayout.PREFERRED_SIZE, 809, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                        .addContainerGap(17, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlPricipalLayout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(btnVerDetalle)
-                        .addGap(94, 94, 94)
-                        .addComponent(btnImprimir)
-                        .addGap(113, 113, 113)
-                        .addComponent(btnLimpiar)
-                        .addGap(127, 127, 127)
-                        .addComponent(btnCerrar)
-                        .addGap(151, 151, 151))))
+            .addGroup(pnlPricipalLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnVerDetalle)
+                .addGap(94, 94, 94)
+                .addComponent(btnImprimir)
+                .addGap(113, 113, 113)
+                .addComponent(btnLimpiar)
+                .addGap(127, 127, 127)
+                .addComponent(btnCerrar)
+                .addGap(151, 151, 151))
+            .addGroup(pnlPricipalLayout.createSequentialGroup()
+                .addGroup(pnlPricipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(pnlBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, pnlPricipalLayout.createSequentialGroup()
+                        .addGap(25, 25, 25)
+                        .addComponent(pnlDetalle, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(0, 29, Short.MAX_VALUE))
+            .addGroup(pnlPricipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlPricipalLayout.createSequentialGroup()
+                    .addContainerGap(15, Short.MAX_VALUE)
+                    .addComponent(spComprobantes, javax.swing.GroupLayout.PREFERRED_SIZE, 906, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap(36, Short.MAX_VALUE)))
         );
         pnlPricipalLayout.setVerticalGroup(
             pnlPricipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlPricipalLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(IblTitulo)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(pnlBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(12, 12, 12)
-                .addComponent(spComprobantes, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(pnlDetalle, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(18, 18, 18)
+                .addGap(152, 152, 152)
                 .addGroup(pnlPricipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnImprimir)
                     .addComponent(btnVerDetalle)
                     .addComponent(btnLimpiar)
                     .addComponent(btnCerrar))
                 .addGap(15, 15, 15))
+            .addGroup(pnlPricipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlPricipalLayout.createSequentialGroup()
+                    .addContainerGap(323, Short.MAX_VALUE)
+                    .addComponent(spComprobantes, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap(46, Short.MAX_VALUE)))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -329,7 +321,7 @@ public class IfrmComprobante extends javax.swing.JInternalFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(pnlPricipal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(24, Short.MAX_VALUE))
+                .addContainerGap(17, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -343,107 +335,70 @@ public class IfrmComprobante extends javax.swing.JInternalFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
-        String criterio = cmbBuscarPor.getSelectedItem().toString();
-        String valor = txtBusqueda.getText().trim();
-
-        javax.swing.table.DefaultTableModel modelo = (javax.swing.table.DefaultTableModel) tblComprobantes.getModel();
-        modelo.setRowCount(0);
-
         try {
-            if (valor.isEmpty()) {
-
-                ArrayList<Comprobante> lista = ComprobanteDAO.listarComprobantes();
-
-                if (lista.isEmpty()) {
-                    JOptionPane.showMessageDialog(this, "No hay comprobantes registrados en el sistema.", "Sin registros", JOptionPane.INFORMATION_MESSAGE);
-                    return;
-                }
-
-                for (Comprobante c : lista) {
-
-                    modelo.addRow(new Object[]{
-                        c.getNumeroComprobante(),
-                        c.getFechaEmision(),
-                        c.getTipoComprobante(),
-                        String.format("%.2f", c.getTotal()),
-                        c.getIdPago()
-                    });
-                }
-            } else {
-
-                if (criterio.equalsIgnoreCase("Número")) {
-                    Comprobante c = ComprobanteDAO.buscarComprobantePorNumero(valor);
-
-                    if (c == null) {
-                        JOptionPane.showMessageDialog(this, "No se encontró ningún comprobante con el número: " + valor, "Sin resultados", JOptionPane.INFORMATION_MESSAGE);
-                        return;
-                    }
-
-                    modelo.addRow(new Object[]{
-                        c.getNumeroComprobante(),
-                        c.getFechaEmision(),
-                        c.getTipoComprobante(),
-                        String.format("%.2f", c.getTotal()),
-                        c.getIdPago()
-                    });
-                } else {
-                    
-                    try {
-                        int id = Integer.parseInt(valor);
-                        Comprobante c = ComprobanteDAO.buscarComprobante(id);
-
-                        if (c == null) {
-                            JOptionPane.showMessageDialog(this, "No se encontró ningún comprobante con el ID: " + id, "Sin resultados", JOptionPane.INFORMATION_MESSAGE);
-                            return;
-                        }
-
-                        modelo.addRow(new Object[]{
-                            c.getNumeroComprobante(),
-                            c.getFechaEmision(),
-                            c.getTipoComprobante(),
-                            String.format("%.2f", c.getTotal()),
-                            c.getIdPago()
-                        });
-                    } catch (NumberFormatException e) {
-                        JOptionPane.showMessageDialog(this, "Para buscar por ID, ingrese un valor numérico válido.", "Error de formato", JOptionPane.WARNING_MESSAGE);
-                    }
-                }
+            String numero = txtBusqueda.getText().trim();
+            if (numero.isEmpty()) {
+                JOptionPane.showMessageDialog(this,
+                        "Ingrese el número del comprobante.",
+                        "Dato requerido",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
             }
+            Comprobante comprobante = ComprobanteDAO.buscarComprobantePorNumero(numero);
+
+            if (comprobante == null) {
+                JOptionPane.showMessageDialog(this,
+                        "No se encontró el comprobante.",
+                        "Búsqueda",
+                        JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+
+            DefaultTableModel modelo = (DefaultTableModel) tblComprobantes.getModel();
+            modelo.setRowCount(0);
+
+            modelo.addRow(new Object[]{
+                comprobante.getNumeroComprobante(),
+                comprobante.getIdPago(),
+                comprobante.getFechaEmision(),
+                comprobante.getTipoComprobante(),
+                comprobante.getTotal()
+            });
+
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Ocurrió un error al consultar la base de datos: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this,
+                    e.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnBuscarActionPerformed
-
-    private void tblComprobantesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblComprobantesMouseClicked
-
-    }//GEN-LAST:event_tblComprobantesMouseClicked
 
     private void btnVerDetalleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVerDetalleActionPerformed
         /// 1. Validar que el usuario haya seleccionado una fila de la tabla
     int filaSeleccionada = tblComprobantes.getSelectedRow();
 
-    if (filaSeleccionada == -1) {
-        JOptionPane.showMessageDialog(this, 
-            "Por favor, seleccione un comprobante de la tabla para ver su detalle.", 
-            "Selección requerida", 
-            JOptionPane.WARNING_MESSAGE);
-        return;
-    }
+        if (filaSeleccionada == -1) {
+            JOptionPane.showMessageDialog(this,
+                    "Por favor, seleccione un comprobante de la tabla para ver su detalle.",
+                    "Selección requerida",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
 
-    // 2. Extraer los datos de la fila seleccionada segun el orden cargado en el boton Buscar:
-    // Columna 0: Numero | Columna 1: Fecha | Columna 2: Tipo | Columna 3: Total | Columna 4: ID Pago
-    String numero = tblComprobantes.getValueAt(filaSeleccionada, 0).toString();
-    String fecha = tblComprobantes.getValueAt(filaSeleccionada, 1).toString();
-    String tipo = tblComprobantes.getValueAt(filaSeleccionada, 2).toString();
-    String total = tblComprobantes.getValueAt(filaSeleccionada, 3).toString();
-    String idPago = tblComprobantes.getValueAt(filaSeleccionada, 4).toString();
+        // 2. Extraer los datos de la fila seleccionada segun el orden cargado en el boton Buscar:
+        // Columna 0: Numero | Columna 1: Fecha | Columna 2: Tipo | Columna 3: Total | Columna 4: ID Pago
+        String numero = tblComprobantes.getValueAt(filaSeleccionada, 0).toString();
+        String fecha = tblComprobantes.getValueAt(filaSeleccionada, 1).toString();
+        String tipo = tblComprobantes.getValueAt(filaSeleccionada, 2).toString();
+        String total = tblComprobantes.getValueAt(filaSeleccionada, 3).toString();
+        String idPago = tblComprobantes.getValueAt(filaSeleccionada, 4).toString();
 
-    // 3. Asignar los valores directamente a los campos de la interfaz
-    txtNumero.setText(numero);
-    txtFecha.setText(fecha);
-    txtTipo.setText(tipo);
-    txtTotal.setText(total);
-    txtIdPago.setText(idPago);
+        // 3. Asignar los valores directamente a los campos de la interfaz
+        txtNumero.setText(numero);
+        txtFecha.setText(fecha);
+        txtTipo.setText(tipo);
+        txtTotal.setText(total);
+        txtIdPago.setText(idPago);
     }//GEN-LAST:event_btnVerDetalleActionPerformed
 
     private void btnLimpiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimpiarActionPerformed
@@ -454,8 +409,7 @@ public class IfrmComprobante extends javax.swing.JInternalFrame {
         txtTipo.setText("");
         txtTotal.setText("");
 
-        cmbBuscarPor.setSelectedIndex(0);
-
+     
         tblComprobantes.clearSelection();
 
         txtBusqueda.requestFocus();
@@ -467,52 +421,49 @@ public class IfrmComprobante extends javax.swing.JInternalFrame {
 
     private void btnImprimirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnImprimirActionPerformed
         // 1. Validar que exista un comprobante seleccionado en el detalle
-    String numero = txtNumero.getText().trim();
+        String numero = txtNumero.getText().trim();
 
-    if (numero.isEmpty()) {
-        JOptionPane.showMessageDialog(this, 
-            "Debe seleccionar un comprobante de la tabla y presionar 'Ver Detalle' antes de imprimir.", 
-            "Atención", 
-            JOptionPane.WARNING_MESSAGE);
-        return;
-    }
+        if (numero.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "Debe seleccionar un comprobante de la tabla y presionar 'Ver Detalle' antes de imprimir.",
+                    "Atención",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
 
-    // 2. Obtener los datos cargados en las cajas de texto
-    String fecha = txtFecha.getText();
-    String tipo = txtTipo.getText();
-    String total = txtTotal.getText();
-    String idPago = txtIdPago.getText(); 
+        // 2. Obtener los datos cargados en las cajas de texto
+        String fecha = txtFecha.getText();
+        String tipo = txtTipo.getText();
+        String total = txtTotal.getText();
+        String idPago = txtIdPago.getText();
 
-    // 3. Diseñar la estructura del ticket
-    StringBuilder ticket = new StringBuilder();
-    ticket.append("=========================================\n");
-    ticket.append("          COMPROBANTE DE PAGO            \n");
-    ticket.append("=========================================\n");
-    ticket.append(" Tipo Comprobante : ").append(tipo).append("\n");
-    ticket.append(" Nro. Comprobante : ").append(numero).append("\n");
-    ticket.append(" Fecha de Emision : ").append(fecha).append("\n");
-    ticket.append(" ID Pago Ref.     : ").append(idPago).append("\n");
-    ticket.append("-----------------------------------------\n");
-    ticket.append(" TOTAL COMPROBANTE: S/ ").append(total).append("\n");
-    ticket.append("=========================================\n");
-    ticket.append("        ¡Gracias por su preferencia!     \n");
+        // 3. Diseñar la estructura del ticket
+        StringBuilder ticket = new StringBuilder();
+        ticket.append("=========================================\n");
+        ticket.append("          COMPROBANTE DE PAGO            \n");
+        ticket.append("=========================================\n");
+        ticket.append(" Tipo Comprobante : ").append(tipo).append("\n");
+        ticket.append(" Nro. Comprobante : ").append(numero).append("\n");
+        ticket.append(" Fecha de Emision : ").append(fecha).append("\n");
+        ticket.append(" ID Pago Ref.     : ").append(idPago).append("\n");
+        ticket.append("-----------------------------------------\n");
+        ticket.append(" TOTAL COMPROBANTE: S/ ").append(total).append("\n");
+        ticket.append("=========================================\n");
+        ticket.append("        ¡Gracias por su preferencia!     \n");
 
-    
-    javax.swing.JTextArea textArea = new javax.swing.JTextArea(ticket.toString());
-    textArea.setFont(new java.awt.Font("Monospaced", java.awt.Font.PLAIN, 12));
-    textArea.setEditable(false);
-    textArea.setOpaque(false);
+        javax.swing.JTextArea textArea = new javax.swing.JTextArea(ticket.toString());
+        textArea.setFont(new java.awt.Font("Monospaced", java.awt.Font.PLAIN, 12));
+        textArea.setEditable(false);
+        textArea.setOpaque(false);
 
-    
-    JOptionPane.showMessageDialog(this, 
-        textArea, 
-        "Vista Previa de Impresión - " + numero, 
-        JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(this,
+                textArea,
+                "Vista Previa de Impresión - " + numero,
+                JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_btnImprimirActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel IblBuscarPor;
     private javax.swing.JLabel IblBusqueda;
     private javax.swing.JLabel IblFecha;
     private javax.swing.JLabel IblIdPago;
@@ -527,7 +478,6 @@ public class IfrmComprobante extends javax.swing.JInternalFrame {
     private javax.swing.JButton btnImprimir;
     private javax.swing.JButton btnLimpiar;
     private javax.swing.JButton btnVerDetalle;
-    private javax.swing.JComboBox<String> cmbBuscarPor;
     private javax.swing.JPanel pnlBusqueda;
     private javax.swing.JPanel pnlDetalle;
     private javax.swing.JPanel pnlPricipal;

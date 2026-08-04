@@ -55,7 +55,6 @@ public class IfrmCobroCaja extends javax.swing.JInternalFrame {
         cmbTipoComprobante = new javax.swing.JComboBox<>();
         IblComprobante = new javax.swing.JLabel();
         btnCobrar = new javax.swing.JButton();
-        btnComprobante = new javax.swing.JButton();
         btnLimpiar = new javax.swing.JButton();
         btnCerrar = new javax.swing.JButton();
         spMedicamentos = new javax.swing.JScrollPane();
@@ -162,14 +161,6 @@ public class IfrmCobroCaja extends javax.swing.JInternalFrame {
             }
         });
 
-        btnComprobante.setText("Ver Comprobante");
-        btnComprobante.setToolTipText("");
-        btnComprobante.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnComprobanteActionPerformed(evt);
-            }
-        });
-
         btnLimpiar.setText("Limpiar");
         btnLimpiar.setToolTipText("");
         btnLimpiar.addActionListener(new java.awt.event.ActionListener() {
@@ -224,18 +215,15 @@ public class IfrmCobroCaja extends javax.swing.JInternalFrame {
         pnlPrincipal.setLayout(pnlPrincipalLayout);
         pnlPrincipalLayout.setHorizontalGroup(
             pnlPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlPrincipalLayout.createSequentialGroup()
-                .addGap(70, 70, 70)
-                .addComponent(btnCobrar)
-                .addGap(87, 87, 87)
-                .addComponent(btnComprobante)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(btnLimpiar)
-                .addGap(91, 91, 91)
-                .addComponent(btnCerrar)
-                .addGap(94, 94, 94))
             .addGroup(pnlPrincipalLayout.createSequentialGroup()
                 .addGroup(pnlPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(pnlPrincipalLayout.createSequentialGroup()
+                        .addGap(114, 114, 114)
+                        .addComponent(btnCobrar, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(121, 121, 121)
+                        .addComponent(btnLimpiar, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(130, 130, 130)
+                        .addComponent(btnCerrar, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(pnlPrincipalLayout.createSequentialGroup()
                         .addGap(314, 314, 314)
                         .addComponent(IblTitulo))
@@ -271,7 +259,6 @@ public class IfrmCobroCaja extends javax.swing.JInternalFrame {
                 .addComponent(pnlPago, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(29, 29, 29)
                 .addGroup(pnlPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnComprobante)
                     .addComponent(btnCobrar)
                     .addComponent(btnLimpiar)
                     .addComponent(btnCerrar))
@@ -298,23 +285,63 @@ public class IfrmCobroCaja extends javax.swing.JInternalFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnCobrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCobrarActionPerformed
+        try {
+            if (txtAtencion.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this,
+                        "Primero busque una atención médica.",
+                        "Atención",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
+            }
 
+            double monto = Double.parseDouble(
+                    lblTotal.getText()
+                            .replace("S/.", "")
+                            .trim()
+            );
+
+            Pago pago = new Pago();
+            pago.setIdAtencion(Integer.parseInt(txtAtencion.getText().trim()));
+            pago.setFechaPago(LocalDate.now());
+            pago.setMonto(monto);
+            pago.setMetodoPago(cmbMetodoPago.getSelectedItem().toString());
+            pago.setEstado(true);
+
+            String tipoComprobante = cmbTipoComprobante.getSelectedItem().toString();
+
+            boolean registrado = CajaLOG.registrarPago(pago, tipoComprobante);
+
+            if (registrado) {
+                JOptionPane.showMessageDialog(this,
+                        "Pago registrado correctamente.",
+                        "Caja",
+                        JOptionPane.INFORMATION_MESSAGE);
+
+                btnLimpiar.doClick();
+            }
+
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this,
+                    "El monto es inválido.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                    e.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
 
     }//GEN-LAST:event_btnCobrarActionPerformed
 
-    private void btnComprobanteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnComprobanteActionPerformed
-        IfrmComprobante frm = new IfrmComprobante();
-        getDesktopPane().add(frm);
-        frm.setVisible(true);
-        dispose();
-    }//GEN-LAST:event_btnComprobanteActionPerformed
-
     private void btnLimpiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimpiarActionPerformed
         txtAtencion.setText("");
-
+        DefaultTableModel modelo = (DefaultTableModel) tblMedicamentos.getModel();
+        modelo.setRowCount(0);
         cmbMetodoPago.setSelectedIndex(0);
         cmbTipoComprobante.setSelectedIndex(0);
-
+        lblTotal.setText("S/. 0.00");
         txtAtencion.requestFocus();
     }//GEN-LAST:event_btnLimpiarActionPerformed
 
@@ -412,7 +439,6 @@ public class IfrmCobroCaja extends javax.swing.JInternalFrame {
     private javax.swing.JButton btnBuscar;
     private javax.swing.JButton btnCerrar;
     private javax.swing.JButton btnCobrar;
-    private javax.swing.JButton btnComprobante;
     private javax.swing.JButton btnLimpiar;
     private javax.swing.JComboBox<String> cmbMetodoPago;
     private javax.swing.JComboBox<String> cmbTipoComprobante;
