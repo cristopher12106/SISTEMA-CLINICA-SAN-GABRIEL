@@ -300,3 +300,38 @@ SELECT * FROM detalle_receta;
 SELECT * FROM examen_laboratorio;
 SELECT * FROM resultado_examen;
 SELECT * FROM entrega_medicamento;
+
+-- =====================================================================
+-- MÓDULO 6: CAJA, FACTURACIÓN Y REPORTES
+-- Entidades: Pago, Comprobante (Boleta / Factura)
+-- Dependencia: pago.id_atencion → atenciones_medicas(idAtencion) (módulo 4)
+--              comprobante.id_pago → pago(id_pago)
+-- Orden: pago primero, comprobante después.
+-- =====================================================================
+
+-- 6.1 Pago (dependencia: atenciones_medicas, módulo 4)
+CREATE TABLE IF NOT EXISTS pago (
+    id_pago INT AUTO_INCREMENT PRIMARY KEY,
+    id_atencion INT NOT NULL,
+    fecha_pago DATE NOT NULL,
+    monto DECIMAL(10,2) NOT NULL,
+    metodo_pago VARCHAR(30) NOT NULL,
+    estado BOOLEAN NOT NULL DEFAULT TRUE,
+    CONSTRAINT fk_pago_atencion
+        FOREIGN KEY (id_atencion) REFERENCES atenciones_medicas(idAtencion)
+);
+
+-- 6.2 Comprobante (dependencia: pago)
+CREATE TABLE IF NOT EXISTS comprobante (
+    id_comprobante INT AUTO_INCREMENT PRIMARY KEY,
+    numero_comprobante VARCHAR(20) NOT NULL UNIQUE,
+    fecha_emision DATE NOT NULL,
+    tipo_comprobante VARCHAR(20) NOT NULL,
+    total DECIMAL(10,2) NOT NULL,
+    id_pago INT NOT NULL UNIQUE,
+    CONSTRAINT fk_comprobante_pago
+        FOREIGN KEY (id_pago) REFERENCES pago(id_pago)
+);
+
+SELECT * FROM pago;
+SELECT * FROM comprobante;

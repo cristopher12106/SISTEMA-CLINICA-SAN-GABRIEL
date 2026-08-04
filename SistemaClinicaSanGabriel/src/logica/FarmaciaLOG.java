@@ -98,8 +98,20 @@ public class FarmaciaLOG {
     }
     public boolean registrarMedicamento(Medicamento med) throws Exception {
         try {
-            // Llama al método insertar/guardar de tu DAO
-            return medicamentoDAO.insertar(med); 
+            boolean registrado = medicamentoDAO.insertar(med);
+            if (registrado) {
+                try {
+                    AuditoriaLOG.registrarAuditoria(
+                        SesionUsuario.getInstance().getIdUsuario(),
+                        "Farmacia",
+                        "Registró el medicamento " + med.getNombre()
+                            + " con " + med.getStockActual() + " unidades de stock inicial"
+                    );
+                } catch (Exception e) {
+                    System.err.println("Error al registrar la auditoría de Farmacia: " + e.getMessage());
+                }
+            }
+            return registrado;
         } catch (SQLException e) {
             throw new Exception("Error al guardar el medicamento: " + e.getMessage());
         }

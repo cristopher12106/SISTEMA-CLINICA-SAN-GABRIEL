@@ -8,10 +8,9 @@ CREATE TABLE IF NOT EXISTS pago (
     monto DECIMAL(10,2) NOT NULL,
     metodo_pago VARCHAR(30) NOT NULL,
     estado BOOLEAN NOT NULL DEFAULT TRUE,
-
-    FOREIGN KEY (id_atencion) REFERENCES atencion_medica(id_atencion)
+    CONSTRAINT fk_pago_atencion
+        FOREIGN KEY (id_atencion) REFERENCES atenciones_medicas(idAtencion)
 );
--- Fin de ejecucion primordial --
 
 -- Pagos de prueba
 INSERT INTO pago (id_atencion, fecha_pago, monto, metodo_pago, estado)

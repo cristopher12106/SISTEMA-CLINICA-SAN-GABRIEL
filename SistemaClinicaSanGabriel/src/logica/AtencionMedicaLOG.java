@@ -2,9 +2,12 @@ package logica;
 
 import datos.AtencionMedicaDAO;
 import datos.CitaDAO;
+import datos.PacienteDAO;
+import datos.SesionUsuario;
 import entidades.AtencionMedica;
 import entidades.Cita;
 import entidades.Diagnostico;
+import entidades.Paciente;
 import entidades.SignosVitales;
 
 import javax.swing.JOptionPane;
@@ -101,6 +104,24 @@ public class AtencionMedicaLOG {
         boolean guardadoExitoso = AtencionMedicaDAO.registrarAtencionCompleta(atencion);
 
         if (guardadoExitoso) {
+            try {
+                String detalle = "Atendió la cita " + atencion.getCodigoCita();
+                Cita citaAtencion = CitaDAO.buscarPorCodigo(atencion.getCodigoCita());
+                if (citaAtencion != null) {
+                    Paciente pacienteAtendido = PacienteDAO.buscarPorHistoriaClinica(citaAtencion.getNumeroHistoriaClinica());
+                    if (pacienteAtendido != null) {
+                        detalle = "Atendió al paciente " + pacienteAtendido.getNombres() + " " + pacienteAtendido.getApellidos()
+                                + " (HC: " + pacienteAtendido.getNumeroHistoriaClinica() + ") en la cita " + atencion.getCodigoCita();
+                    }
+                }
+                AuditoriaLOG.registrarAuditoria(
+                        SesionUsuario.getInstance().getIdUsuario(),
+                        "Atenciones Medicas",
+                        detalle
+                );
+            } catch (Exception e) {
+                System.err.println("Error al registrar la auditoría de Atenciones Médicas: " + e.getMessage());
+            }
             JOptionPane.showMessageDialog(null, "La atención médica se registró correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
             return true;
         } else {
