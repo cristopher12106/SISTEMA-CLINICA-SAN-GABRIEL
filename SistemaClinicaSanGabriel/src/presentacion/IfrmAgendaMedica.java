@@ -5,8 +5,8 @@
 package presentacion;
 
 import entidades.*;
-import datos.CitaDAO;
-import datos.HorarioDAO;
+import logica.CitaLOG;
+import logica.HorarioLOG;
 import logica.MedicoLOG;
 import java.util.ArrayList;
 import javax.swing.DefaultComboBoxModel;
@@ -92,17 +92,17 @@ public class IfrmAgendaMedica extends javax.swing.JInternalFrame {
 
         tblCitas.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
             },
             new String [] {
-                "Fecha", "Hora", "Historia Clinica", "Estado"
+                "Codigo Cita", "Historia Clinica", "Fecha", "Hora", "Estado"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false
+                false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -223,52 +223,33 @@ public class IfrmAgendaMedica extends javax.swing.JInternalFrame {
     }
     
     private void cargarTablaHorarios(Medico medico) {
-        DefaultTableModel modelo = new DefaultTableModel() {
-            @Override
-            public boolean isCellEditable(int fila, int columna) {
-                return false;
-            }
-        };
-        modelo.addColumn("Dia");
-        modelo.addColumn("Hora Inicio");
-        modelo.addColumn("Hora Fin");
+        DefaultTableModel modelo = (DefaultTableModel) tblHorarios.getModel();
+        modelo.setRowCount(0);
 
-        ArrayList<HorarioMedico> horarios = HorarioDAO.listarHorariosPorMedico(medico);
+        ArrayList<HorarioMedico> horarios = HorarioLOG.listarHorariosPorMedico(medico);
         for (HorarioMedico h : horarios) {
             Object[] fila = {
                 h.getDiaSemana(), h.getHoraInicio(), h.getHoraFin()
             };
             modelo.addRow(fila);
         }
-        tblHorarios.setModel(modelo);
     }
-    
-    private void cargarTablaCitas(Medico medico) {
-        DefaultTableModel modelo = new DefaultTableModel() {
-            @Override
-            public boolean isCellEditable(int fila, int columna) {
-                return false;
-            }
-        };
-        modelo.addColumn("Codigo Cita");
-        modelo.addColumn("Historia Clinica");
-        modelo.addColumn("Fecha");
-        modelo.addColumn("Hora");
-        modelo.addColumn("Estado");
 
-        ArrayList<Cita> todasLasCitas = CitaDAO.listarCitas();
+    private void cargarTablaCitas(Medico medico) {
+        DefaultTableModel modelo = (DefaultTableModel) tblCitas.getModel();
+        modelo.setRowCount(0);
+
+        ArrayList<Cita> todasLasCitas = CitaLOG.listarCitas();
         for (Cita c : todasLasCitas) {
             if (c.getMedico().getCodigo().equals(medico.getCodigo())) {
                 Object[] fila = {
-                    c.getCodigo(), c.getNumeroHistoriaClinica(),
-                    c.getFecha(), c.getHora(), c.getEstado()
+                    c.getCodigo(), c.getNumeroHistoriaClinica(), c.getFecha(), c.getHora(), c.getEstado()
                 };
                 modelo.addRow(fila);
             }
         }
-        tblCitas.setModel(modelo);
     }
-
+            
     //PROBAR
     public static void main(String[] args) {
         javax.swing.JFrame frame = new javax.swing.JFrame("Prueba de Agenda Médica");

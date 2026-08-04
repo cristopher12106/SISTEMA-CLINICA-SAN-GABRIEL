@@ -210,8 +210,7 @@ public class IfrmAgendarCita extends javax.swing.JInternalFrame {
         }
         return null;
     }
-    
-    
+     
     private void txtFechaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtFechaActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtFechaActionPerformed

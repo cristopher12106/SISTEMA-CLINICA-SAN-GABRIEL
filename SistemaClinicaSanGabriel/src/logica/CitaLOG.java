@@ -83,36 +83,37 @@ public class CitaLOG {
             );
         }
         return exito;
-        }
+    }
 
         // RN-21: cancelacion permitida solo hasta 2 horas antes de la cita
-        public static boolean cancelarCita(String codigoCita) {
-            Cita cita = CitaDAO.buscarPorCodigo(codigoCita);
-            if (cita == null) {
-                JOptionPane.showMessageDialog(null,
-                        "No se encontro la cita.",
-                        "Cita no encontrada", JOptionPane.WARNING_MESSAGE);
-                return false;
-            }
-
-            LocalDateTime fechaHoraCita = obtenerFechaHora(cita.getFecha(), cita.getHora());
-            LocalDateTime ahora = LocalDateTime.now();
-
-            if (fechaHoraCita.minusHours(2).isBefore(ahora)) {
-                JOptionPane.showMessageDialog(null,
-                        "Solo se puede cancelar una cita hasta 2 horas antes de la hora programada.",
-                        "Cancelacion no permitida", JOptionPane.WARNING_MESSAGE);
-                return false;
-            }
-
-            boolean exito = CitaDAO.actualizarEstadoCita(codigoCita, "Cancelada");
-            if (exito) {
-                AuditoriaLOG.registrarAuditoria(
-                    SesionUsuario.getInstance().getIdUsuario(),
-                    "Citas","Canceló la cita N° " + codigoCita);
-            }
-            return exito;
+    public static boolean cancelarCita(String codigoCita) {
+        Cita cita = CitaDAO.buscarPorCodigo(codigoCita);
+        if (cita == null) {
+            JOptionPane.showMessageDialog(null,
+                "No se encontro la cita.",
+                "Cita no encontrada", JOptionPane.WARNING_MESSAGE);
+            return false;
         }
+
+        LocalDateTime fechaHoraCita = obtenerFechaHora(cita.getFecha(), cita.getHora());
+        LocalDateTime ahora = LocalDateTime.now();
+
+        if (fechaHoraCita.minusHours(2).isBefore(ahora)) {
+            JOptionPane.showMessageDialog(null,
+                "Solo se puede cancelar una cita hasta 2 horas antes de la hora programada.",
+                "Cancelacion no permitida", JOptionPane.WARNING_MESSAGE);
+            return false;
+        }
+
+        boolean exito = CitaDAO.actualizarEstadoCita(codigoCita, "Cancelada");
+        if (exito) {
+            AuditoriaLOG.registrarAuditoria(
+                SesionUsuario.getInstance().getIdUsuario(),
+                "Citas","Canceló la cita N° " + codigoCita);
+        }
+        
+        return exito;
+    }
         
     public static boolean reprogramarCita(String codigoCita, String nuevaFecha, String nuevaHora) {
         // Validar formato de fecha

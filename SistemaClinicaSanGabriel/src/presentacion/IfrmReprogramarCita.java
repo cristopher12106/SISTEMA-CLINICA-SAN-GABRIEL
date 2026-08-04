@@ -59,17 +59,17 @@ public class IfrmReprogramarCita extends javax.swing.JInternalFrame {
 
         tblCitas.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
             },
             new String [] {
-                "Fecha", "Hora", "Historia Clinica", "Estado"
+                "Codigo", "Medico", "Historia Clinica", "Fecha", "Hora", "Estado"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false
+                false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -294,29 +294,18 @@ public class IfrmReprogramarCita extends javax.swing.JInternalFrame {
     }
     
     private void cargarTablaCitas() {
-        DefaultTableModel modelo = new DefaultTableModel() {
-            @Override
-            public boolean isCellEditable(int fila, int columna) {
-                return false;
-            }
-        };
-        modelo.addColumn("Codigo");
-        modelo.addColumn("Medico");
-        modelo.addColumn("Historia Clinica");
-        modelo.addColumn("Fecha");
-        modelo.addColumn("Hora");
-        modelo.addColumn("Estado");
+        DefaultTableModel modelo = (DefaultTableModel) tblCitas.getModel();
+        modelo.setRowCount(0);
 
         ArrayList<Cita> lista = CitaLOG.listarCitas();
-            for (Cita c : lista) {
+        for (Cita c : lista) {
             Object[] fila = {
                 c.getCodigo(),
                 c.getMedico().getNombres() + " " + c.getMedico().getApellidos(),
                 c.getNumeroHistoriaClinica(), c.getFecha(), c.getHora(), c.getEstado()
             };
             modelo.addRow(fila);
-            }
-        tblCitas.setModel(modelo);
+        }
     }
     
     public static void main(String[] args) {
