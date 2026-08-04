@@ -124,6 +124,27 @@ public class PacienteDAO {
         return filasAfectadas > 0;
     }
 
+    public static Paciente buscarPorId(int idPaciente) {
+        String sql = "SELECT * FROM paciente WHERE id_paciente = ?";
+        Object[] datos = null;
+
+        try (Connection cn = ConexionBD.getInstancia().getConexion();
+             PreparedStatement ps = cn.prepareStatement(sql)) {
+            ps.setInt(1, idPaciente);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    datos = leerDatosBasicos(rs);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al buscar paciente por id: " + e.getMessage());
+        }
+
+        if (datos == null) return null;
+        return construirPaciente(datos);
+    }
+
     public static Paciente buscarPorDni(String dni) {
         return buscarPorDni(dni, true);
     }

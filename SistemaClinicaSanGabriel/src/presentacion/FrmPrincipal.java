@@ -206,29 +206,29 @@ public class FrmPrincipal extends javax.swing.JFrame {
                 .agregarCategoria("Atencion Medica")
                     .agregarItem("Formulario de Atencion Medica", e -> {abrirInternalFrame(new IfrmAtencionMedica());},
                             Rol.MEDICO)
+                    .agregarItem("Solicitud de Examen de Laboratorio", e -> {abrirInternalFrame(new IfrmSolicitudLaboratorio());},
+                            Rol.MEDICO, Rol.ADMINISTRADOR)
 
                 .agregarCategoria("Laboratorio")
                     .agregarItem("Solicitudes Pendientes", e -> {abrirInternalFrame(new IfrmLaboratorioAtencion());},
-                            Rol.LABORATORISTA, Rol.ADMINISTRADOR)
+                            Rol.LABORATORISTA)
 
                 .agregarCategoria("Farmacia")
                     .agregarItem("Despacho y entrega de Medicamentos", e -> {abrirInternalFrame(new IfrmDespachoFarmacia());},
                             Rol.FARMACEUTICO)
                     .agregarItem("Inventario de Medicamentos", e -> {abrirInternalFrame(new IfrmInventarioMedicamentos());},
                             Rol.FARMACEUTICO, Rol.ADMINISTRADOR)
+                    .agregarItem("Añadir Medicamentos", e -> {abrirInternalFrame(new IfrmRegistroMedicamento());},
+                            Rol.FARMACEUTICO, Rol.ADMINISTRADOR)
 
                 .agregarCategoria("Caja")
-                    .agregarItem("Registrar Pago", e -> {},
+                    .agregarItem("Registrar Pago", e -> {abrirInternalFrame(new IfrmCobroCaja());},
                             Rol.CAJERO)
-                    .agregarItem("Emitir Comprobante", e -> {},
+                    .agregarItem("Emitir Comprobante", e -> {abrirInternalFrame(new IfrmComprobante());},
                             Rol.CAJERO)
 
                 .agregarCategoria("Reportes")
-                    .agregarItem("Pacientes Por Especialidad", e -> {},
-                            Rol.DIRECTOR_MEDICO, Rol.ADMINISTRADOR)
-                    .agregarItem("Ingresos Diarios", e -> {},
-                            Rol.CAJERO, Rol.DIRECTOR_MEDICO, Rol.ADMINISTRADOR)
-                    .agregarItem("Exportar Reportes", e -> {},
+                    .agregarItem("Dashboard Reportes", e -> {abrirInternalFrame(new IfrmDashboardReportes());},
                             Rol.DIRECTOR_MEDICO, Rol.ADMINISTRADOR)
 
                 .build(usuarioActual.getRol());

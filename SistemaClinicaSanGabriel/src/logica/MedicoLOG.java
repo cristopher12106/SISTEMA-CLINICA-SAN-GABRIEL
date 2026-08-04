@@ -142,4 +142,24 @@ public class MedicoLOG {
     public static java.util.ArrayList<Especialidad> listarEspecialidades() {
         return MedicoDAO.listarEspecialidades();
     }
+
+    public static boolean registrarEspecialidad(Especialidad especialidad) {
+        if (especialidad == null || especialidad.getCodigo() == null || especialidad.getCodigo().trim().isEmpty()
+                || especialidad.getNombre() == null || especialidad.getNombre().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(null,
+                    "El codigo y el nombre de la especialidad son obligatorios.",
+                    "Datos incompletos", JOptionPane.WARNING_MESSAGE);
+            return false;
+        }
+
+        boolean exito = MedicoDAO.registrarEspecialidad(especialidad);
+        if (exito) {
+            AuditoriaLOG.registrarAuditoria(
+                SesionUsuario.getInstance().getIdUsuario(),
+                "Especialidades",
+                "Registró la especialidad " + especialidad.getCodigo() + " - " + especialidad.getNombre()
+            );
+        }
+        return exito;
+    }
 }

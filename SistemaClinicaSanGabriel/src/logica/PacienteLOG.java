@@ -311,7 +311,7 @@ public class PacienteLOG {
             errores.append("- Los apellidos solo pueden contener letras y espacios.\n");
         }
 
-        // Fecha nacimiento
+        // Fecha de nacimiento
         if (paciente.getFechaNacimiento() == null) {
             errores.append("- La fecha de nacimiento es obligatoria.\n");
         } else if (paciente.getFechaNacimiento().isAfter(LocalDate.now())) {

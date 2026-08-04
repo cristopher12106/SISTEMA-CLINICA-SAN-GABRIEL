@@ -12,6 +12,92 @@ import java.sql.Statement;
 
 public class AtencionMedicaDAO {
 
+    public static AtencionMedica buscarPorId(int idAtencion) {
+        if (idAtencion <= 0) {
+            return null;
+        }
+
+        String sqlAtencion = "SELECT idAtencion, codigoCita, motivoConsulta, antecedentes, planTratamiento, observaciones "
+                + "FROM atenciones_medicas WHERE idAtencion = ?";
+        String sqlSignos = "SELECT idSignos, idAtencion, pas, pad, temperatura, peso, talla, fc, fr, imc "
+                + "FROM signos_vitales WHERE idAtencion = ?";
+        String sqlDiag = "SELECT idDiagnostico, idAtencion, descripcion, tipo "
+                + "FROM diagnosticos_atencion WHERE idAtencion = ?";
+        String sqlReceta = "SELECT idReceta FROM recetas_medicas WHERE idAtencion = ?";
+
+        AtencionMedica atencion = null;
+
+        try (Connection cn = ConexionBD.getInstancia().getConexion()) {
+            try (PreparedStatement psAtencion = cn.prepareStatement(sqlAtencion)) {
+                psAtencion.setInt(1, idAtencion);
+                try (ResultSet rs = psAtencion.executeQuery()) {
+                    if (rs.next()) {
+                        atencion = new AtencionMedica();
+                        atencion.setIdAtencion(rs.getInt("idAtencion"));
+                        atencion.setCodigoCita(rs.getString("codigoCita"));
+                        atencion.setMotivoConsulta(rs.getString("motivoConsulta"));
+                        atencion.setAntecedentes(rs.getString("antecedentes"));
+                        atencion.setTratamiento(rs.getString("planTratamiento"));
+                        atencion.setObservaciones(rs.getString("observaciones"));
+                    }
+                }
+            }
+
+            if (atencion == null) {
+                return null;
+            }
+
+            try (PreparedStatement psSignos = cn.prepareStatement(sqlSignos)) {
+                psSignos.setInt(1, idAtencion);
+                try (ResultSet rs = psSignos.executeQuery()) {
+                    if (rs.next()) {
+                        SignosVitales sv = new SignosVitales();
+                        sv.setIdSignos(rs.getInt("idSignos"));
+                        sv.setIdAtencion(rs.getInt("idAtencion"));
+                        sv.setPas(rs.getDouble("pas"));
+                        sv.setPad(rs.getDouble("pad"));
+                        sv.setTemperatura(rs.getDouble("temperatura"));
+                        sv.setPeso(rs.getDouble("peso"));
+                        sv.setTalla(rs.getDouble("talla"));
+                        sv.setFc(rs.getInt("fc"));
+                        sv.setFr(rs.getInt("fr"));
+                        sv.setImc(rs.getDouble("imc"));
+                        atencion.setSignosVitales(sv);
+                    }
+                }
+            }
+
+            try (PreparedStatement psDiag = cn.prepareStatement(sqlDiag)) {
+                psDiag.setInt(1, idAtencion);
+                try (ResultSet rs = psDiag.executeQuery()) {
+                    while (rs.next()) {
+                        Diagnostico d = new Diagnostico();
+                        d.setIdDiagnostico(rs.getInt("idDiagnostico"));
+                        d.setIdAtencion(rs.getInt("idAtencion"));
+                        d.setDescripcion(rs.getString("descripcion"));
+                        d.setTipo(rs.getString("tipo"));
+                        atencion.agregarDiagnostico(d);
+                    }
+                }
+            }
+
+            try (PreparedStatement psReceta = cn.prepareStatement(sqlReceta)) {
+                psReceta.setInt(1, idAtencion);
+                try (ResultSet rs = psReceta.executeQuery()) {
+                    if (rs.next()) {
+                        atencion.setReceta(RecetaDAO.obtenerRecetaConDetalles(rs.getInt("idReceta")));
+                    }
+                }
+            }
+
+            return atencion;
+
+        } catch (SQLException e) {
+            System.err.println("Error al buscar atención médica por id " + idAtencion + ": " + e.getMessage());
+            return null;
+        }
+    }
+
     public static boolean registrarAtencionCompleta(AtencionMedica atencion) {
         // Consultas alineadas con la estructura del script SQL
         String sqlAtencion = "INSERT INTO atenciones_medicas (codigoCita, motivoConsulta, antecedentes, planTratamiento, observaciones) VALUES (?, ?, ?, ?, ?)";

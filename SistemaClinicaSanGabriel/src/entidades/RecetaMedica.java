@@ -6,6 +6,7 @@ import java.util.List;
 public class RecetaMedica {
     private int idReceta;
     private int idAtencion;
+    private boolean despachada;
     private List<DetalleReceta> detalles;
 
     // Constructor vacío inicializando la lista de detalles
@@ -56,6 +57,14 @@ public class RecetaMedica {
 
     public void setDetalles(List<DetalleReceta> detalles) {
         this.detalles = detalles;
+    }
+
+    public boolean isDespachada() {
+        return despachada;
+    }
+
+    public void setDespachada(boolean despachada) {
+        this.despachada = despachada;
     }
 
     @Override

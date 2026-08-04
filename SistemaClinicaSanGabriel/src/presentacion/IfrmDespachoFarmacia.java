@@ -1,171 +1,149 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JInternalFrame.java to edit this template
- */
 package presentacion;
+
 import logica.FarmaciaLOG;
-import entidades.EntregaMedicamento;
+import entidades.DetalleReceta;
+import entidades.Medicamento;
+import entidades.RecetaMedica;
+
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JInternalFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author LENOVO
  */
-public class IfrmDespachoFarmacia extends javax.swing.JInternalFrame {
-    private final FarmaciaLOG farmaciaLOG;
+public class IfrmDespachoFarmacia extends JInternalFrame {
 
-    /**
-     * Creates new form IfrmDespachoFarmacia
-     */
+    private final FarmaciaLOG farmaciaLOG;
+    private RecetaMedica recetaCargada;
+
+    private final JTextField txtIdReceta = new JTextField(12);
+    private final JButton btnBuscar = new JButton("Buscar");
+    private final JButton btnDespachar = new JButton("Registrar Despacho");
+    private final JTable tblDespacho;
+
     public IfrmDespachoFarmacia() {
-        initComponents();
         this.farmaciaLOG = new FarmaciaLOG();
-        
+
         this.setTitle("Despacho de Medicamentos - Farmacia");
         this.setClosable(true);
         this.setMaximizable(true);
         this.setIconifiable(true);
+
+        tblDespacho = new JTable(new DefaultTableModel(
+                new Object[][]{},
+                new String[]{"Medicamento", "Cantidad", "Stock Disponible", "Precio (S/)"}
+        ) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        });
+
+        construirUI();
+    }
+
+    private void construirUI() {
+        JPanel pnlBusqueda = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        pnlBusqueda.setBorder(BorderFactory.createEmptyBorder(10, 10, 0, 10));
+        pnlBusqueda.add(new JLabel("ID Receta:"));
+        pnlBusqueda.add(txtIdReceta);
+        pnlBusqueda.add(btnBuscar);
+        btnBuscar.addActionListener(e -> btnBuscarActionPerformed());
+        txtIdReceta.addActionListener(e -> btnBuscarActionPerformed());
+
+        JScrollPane scroll = new JScrollPane(tblDespacho);
+        scroll.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        JPanel pnlBotones = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        pnlBotones.add(btnDespachar);
+        btnDespachar.addActionListener(e -> btnDespacharActionPerformed());
+
+        getContentPane().setLayout(new BorderLayout());
+        getContentPane().add(pnlBusqueda, BorderLayout.NORTH);
+        getContentPane().add(scroll, BorderLayout.CENTER);
+        getContentPane().add(pnlBotones, BorderLayout.SOUTH);
+
+        pack();
+        setSize(580, 380);
+    }
+
+    private void btnBuscarActionPerformed() {
+        String texto = txtIdReceta.getText().trim();
+        if (texto.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Ingrese el ID de la receta a buscar.", "Campo vacío", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        try {
+            int idReceta = Integer.parseInt(texto);
+            recetaCargada = farmaciaLOG.cargarReceta(idReceta);
+            cargarTabla();
+            if (recetaCargada.isDespachada()) {
+                btnDespachar.setEnabled(false);
+                JOptionPane.showMessageDialog(this, "La receta N° " + idReceta + " ya fue despachada anteriormente.", "Receta ya despachada", JOptionPane.WARNING_MESSAGE);
+            } else {
+                btnDespachar.setEnabled(true);
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "El ID de receta debe ser un número entero válido.", "Error de Formato", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Receta no encontrada", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+
+    private void cargarTabla() throws Exception {
+        DefaultTableModel modelo = (DefaultTableModel) tblDespacho.getModel();
+        modelo.setRowCount(0);
+        if (recetaCargada == null || recetaCargada.getDetalles() == null || recetaCargada.getDetalles().isEmpty()) {
+            return;
+        }
+
+        Map<Integer, Medicamento> inventario = new HashMap<>();
+        for (Medicamento m : farmaciaLOG.obtenerInventario()) {
+            inventario.put(m.getIdMedicamento(), m);
+        }
+
+        for (DetalleReceta d : recetaCargada.getDetalles()) {
+            Medicamento med = inventario.get(d.getIdMedicamento());
+            String nombre = med != null ? med.getNombre() : d.getNombreMedicamento();
+            int stock = med != null ? med.getStockActual() : 0;
+            double precio = med != null ? med.getPrecioUnitario() : 0.0;
+            modelo.addRow(new Object[]{nombre, d.getCantidad(), stock, precio});
+        }
+    }
+
+    private void btnDespacharActionPerformed() {
+        if (recetaCargada == null) {
+            JOptionPane.showMessageDialog(this, "Primero busque una receta válida para registrar el despacho.", "Despacho no disponible", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        try {
+            String mensaje = farmaciaLOG.procesarDespachoReceta(recetaCargada.getIdReceta());
+            JOptionPane.showMessageDialog(this, mensaje, "Proceso de Despacho", JOptionPane.INFORMATION_MESSAGE);
+            limpiarCampos();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Error de Despacho", JOptionPane.WARNING_MESSAGE);
+        }
     }
 
     private void limpiarCampos() {
-        txtIdAtencion.setText("");
-        txtIdMedicamento.setText("");
-        txtCantidad.setText("");
-        txtIdAtencion.requestFocus();
+        recetaCargada = null;
+        txtIdReceta.setText("");
+        btnDespachar.setEnabled(true);
+        ((DefaultTableModel) tblDespacho.getModel()).setRowCount(0);
+        txtIdReceta.requestFocus();
     }
-
-    /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
-     */
-    @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents() {
-
-        lblTitulo = new javax.swing.JLabel();
-        lblAtencion = new javax.swing.JLabel();
-        txtIdAtencion = new javax.swing.JTextField();
-        lblMedicamento = new javax.swing.JLabel();
-        txtIdMedicamento = new javax.swing.JTextField();
-        lblCantidad = new javax.swing.JLabel();
-        txtCantidad = new javax.swing.JTextField();
-        btnDespachar = new javax.swing.JButton();
-
-        lblTitulo.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        lblTitulo.setText("Despacho y Entrega de Medicamentos");
-
-        lblAtencion.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        lblAtencion.setText("ID Atencion / Receta :");
-
-        txtIdAtencion.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtIdAtencionActionPerformed(evt);
-            }
-        });
-
-        lblMedicamento.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        lblMedicamento.setText("ID Medicamento :");
-
-        lblCantidad.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        lblCantidad.setText("Cantidad :");
-
-        btnDespachar.setFont(new java.awt.Font("Segoe UI", 2, 14)); // NOI18N
-        btnDespachar.setText("Registrar Despacho");
-        btnDespachar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnDespacharActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(109, 109, 109)
-                        .addComponent(lblTitulo))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(70, 70, 70)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lblMedicamento)
-                            .addComponent(lblAtencion)
-                            .addComponent(lblCantidad))
-                        .addGap(35, 35, 35)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(txtIdAtencion)
-                            .addComponent(txtIdMedicamento)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(txtCantidad, javax.swing.GroupLayout.DEFAULT_SIZE, 88, Short.MAX_VALUE)
-                                .addGap(54, 54, 54))))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(203, 203, 203)
-                        .addComponent(btnDespachar, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(150, Short.MAX_VALUE))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(lblTitulo, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(40, 40, 40)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblAtencion)
-                    .addComponent(txtIdAtencion, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(53, 53, 53)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblMedicamento)
-                    .addComponent(txtIdMedicamento, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(62, 62, 62)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblCantidad, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtCantidad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 84, Short.MAX_VALUE)
-                .addComponent(btnDespachar, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(60, 60, 60))
-        );
-
-        pack();
-    }// </editor-fold>//GEN-END:initComponents
-
-    private void txtIdAtencionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtIdAtencionActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtIdAtencionActionPerformed
-
-    private void btnDespacharActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDespacharActionPerformed
-        try {
-            if (txtIdAtencion.getText().trim().isEmpty() || 
-                txtIdMedicamento.getText().trim().isEmpty() || 
-                txtCantidad.getText().trim().isEmpty()) {   
-                JOptionPane.showMessageDialog(this, "Por favor complete todos los campos.", "Campos vacíos", JOptionPane.WARNING_MESSAGE);
-                return;
-            }
-            int idAtencion = Integer.parseInt(txtIdAtencion.getText().trim());
-            int idMedicamento = Integer.parseInt(txtIdMedicamento.getText().trim());
-            int cantidad = Integer.parseInt(txtCantidad.getText().trim());
-
-            String resultadoMsg = farmaciaLOG.procesarEntrega(idAtencion, idMedicamento, cantidad);
-
-            JOptionPane.showMessageDialog(this, resultadoMsg, "Proceso de Despacho", JOptionPane.INFORMATION_MESSAGE);
-
-            limpiarCampos();
-
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Los ID y la Cantidad deben ser números enteros válidos.", "Error de Formato", JOptionPane.ERROR_MESSAGE);
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, e.getMessage(), "Validación / Error de Despacho", JOptionPane.WARNING_MESSAGE);
-        } // TODO add your handling code here:
-    }//GEN-LAST:event_btnDespacharActionPerformed
-
-
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnDespachar;
-    private javax.swing.JLabel lblAtencion;
-    private javax.swing.JLabel lblCantidad;
-    private javax.swing.JLabel lblMedicamento;
-    private javax.swing.JLabel lblTitulo;
-    private javax.swing.JTextField txtCantidad;
-    private javax.swing.JTextField txtIdAtencion;
-    private javax.swing.JTextField txtIdMedicamento;
-    // End of variables declaration//GEN-END:variables
 }

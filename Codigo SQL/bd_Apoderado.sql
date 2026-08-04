@@ -11,4 +11,4 @@ CREATE TABLE IF NOT EXISTS apoderado (
 -- Fin de ejecucion primordial -- 
 -- Datos de prueba
 INSERT INTO apoderado (dni, nombres, apellidos, telefono, parentesco, estado)
-VALUES ('12345678', 'Maria', 'Garcia', '999888777', 'Madre', TRUE);
+VALUES ('12345678', 'Maria', 'Gonzalez', '987654321', 'Madre', TRUE);
